@@ -24,8 +24,9 @@ public class TavernaMiniGameDialog : MonoBehaviour
 
     protected virtual void SetDisplayInformation()
     {
-        nameText.text = GameManager.SelectedCharacter.characterName;
-        portrait.sprite = GameManager.SelectedCharacter.characterIcon;
+		// TODO: Hook to kylie's better dialog system
+        //nameText.text = GameManager.SelectedCharacter.characterName;/
+        //portrait.sprite = GameManager.SelectedCharacter.characterIcon;
     }
 
 	/// <summary>

@@ -16,12 +16,13 @@ public class TavernaEnemyDialog : TavernaMiniGameDialog
             crew = GameManager.MasterCrewList.RandomElement();
         }
 
-        nameText.text = crew.CrewName;
-        portrait.sprite = crew.CrewPortrait;
+        // TODO: Hook to kylie's better dialog system
+        //nameText.text = crew.CrewName;
+        //portrait.sprite = crew.CrewPortrait;
 
-        if (portrait.sprite == null) {
-            portrait.sprite = Resources.Load<Sprite>(DefaultPortrait);
-        }
+        //if (portrait.sprite == null) {
+        //    portrait.sprite = Resources.Load<Sprite>(DefaultPortrait);
+        //}
     }
 
 	public override void ShowCharacterInfo() {
