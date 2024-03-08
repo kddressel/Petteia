@@ -11,7 +11,7 @@ public class TitleScreenButtons : MenuButtons
 		PlayerSelection += EnableGameStart;
 
 		GameManager.SelectedCharacter = null;
-		GameManager.SelectedDifficulty = UrAIController.AIDifficulty.None;
+		GameManager.SelectedDifficulty = AIDifficulty.None;
 		gameStartButton.interactable = false;
 	}
 

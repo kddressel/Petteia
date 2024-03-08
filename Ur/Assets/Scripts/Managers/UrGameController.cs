@@ -481,13 +481,13 @@ public class UrGameController : MonoBehaviour
 
 		string winsKey, totalKey, shortestKey, longestKey;
 		switch (GameManager.SelectedDifficulty) {
-			case UrAIController.AIDifficulty.Easy:
+			case AIDifficulty.Easy:
 				winsKey = SaveKeys.WinsEasy;
 				totalKey = SaveKeys.TotalGamesEasy;
 				shortestKey = SaveKeys.ShortestEasy;
 				longestKey = SaveKeys.LongestEasy;
 				break;
-			case UrAIController.AIDifficulty.Medium:
+			case AIDifficulty.Medium:
 				winsKey = SaveKeys.WinsMedium;
 				totalKey = SaveKeys.TotalGamesMedium;
 				shortestKey = SaveKeys.ShortestMedium;

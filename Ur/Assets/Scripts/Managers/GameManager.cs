@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum AIDifficulty { Easy, Medium, Hard, None }
+
 public class GameManager : MonoBehaviour
 {
     public Text loadingText;
@@ -22,8 +24,9 @@ public class GameManager : MonoBehaviour
 	private static Scene persistantScene;
     private static GameManager instance;
 
+    public static AIDifficulty SelectedDifficulty { get; set; }
+
 	public static List<CrewMember> MasterCrewList { get; set; }
-	public static UrAIController.AIDifficulty SelectedDifficulty { get; set; }
 	public static PlayableCharacter SelectedCharacter { get; set; }
 	public static List<string> UrFlavor { get; private set; }
 	public static List<string> UrInsults { get; private set; }
@@ -111,7 +114,8 @@ public class GameManager : MonoBehaviour
     }
 
     public static void LoadGamePlay() {
-        instance.StartCoroutine(instance.LoadScene(2));
+        var gameToLoad = Input.GetKey(KeyCode.U) ? 3 : 2;       // hold U to load Ur, default loads petteia
+        instance.StartCoroutine(instance.LoadScene(gameToLoad));
     }
 
     private IEnumerator LoadScene(int index) {

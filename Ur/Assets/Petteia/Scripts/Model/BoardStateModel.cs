@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shiny.Solver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -59,7 +60,7 @@ namespace Assets.Petteia.Scripts.Model
 
     #region Needs categorization
 
-    public class PlayerModel
+    public class PlayerModel : IGamePlayer
     {
         public PlayerDef Def { get; internal set; }
         public IPlayerAgent Agent { get; internal set; }
@@ -70,31 +71,25 @@ namespace Assets.Petteia.Scripts.Model
     /// </summary>
     public class RulesSet
     {
-        public PlayerModel PlayerTurn { get; private set; }
-
-        virtual public void StartFirstTurn(PlayerModel[] players)
+        virtual public PlayerModel AdvanceToNextTurn(PlayerModel[] players, PlayerModel currentTurn)
         {
-            PlayerTurn = players.FirstOrDefault();
+            if (currentTurn == players[0]) return players[1];
+            else if (currentTurn == players[1]) return players[0];
+            else return null;
         }
 
-        virtual public void AdvanceToNextTurn(PlayerModel[] players)
-        {
-            if (PlayerTurn == players[0]) PlayerTurn = players[1];
-            else if (PlayerTurn == players[1]) PlayerTurn = players[0];
-        }
-
-        virtual public IEnumerable<Vector2Int> GetSpacesToCaptureInMove(BoardStateModel board, Vector2Int from, Vector2Int to)
+        virtual public IEnumerable<Vector2Int> GetSpacesToCaptureInMove(BoardStateModel board, PlayerModel currentTurn, Vector2Int from, Vector2Int to)
         {
             var isValid = IsValidMove(board, from, to);
-            var adjacentEnemySpaces = board.GetAdjacentSpaces(to).Where(space => !space.IsEmpty && space.Piece.Owner != PlayerTurn);
-            
+            var adjacentEnemySpaces = board.GetAdjacentSpaces(to).Where(space => !space.IsEmpty && space.Piece.Owner != currentTurn);
+
             // it is supposed to multi-capture if you surround pieces in multiple directions
             // moving your piece between two enemy pieces isn't a capture. enemy has to move to capture, so we need to check who's turn it is
             // TODO: Is it supposed to capture every piece in a line if there are multiple?
-            foreach(var enemySpace in adjacentEnemySpaces)
+            foreach (var enemySpace in adjacentEnemySpaces)
             {
                 var capturingSpace = board.GetNextInSameDirection(to, enemySpace.Pos);
-                if(capturingSpace != null && capturingSpace.Piece.Owner == PlayerTurn)
+                if (capturingSpace != null && capturingSpace.Piece?.Owner == currentTurn)
                 {
                     yield return enemySpace.Pos;
                 }
@@ -206,8 +201,54 @@ namespace Assets.Petteia.Scripts.Model
 
         public SpaceModel GetSpaceAt(Vector2Int pos)
         {
-            if (pos.x < 0 || pos.y < 0 || pos.x > Size.x || pos.y > Size.y) return null;
+            if (pos.x < 0 || pos.y < 0 || pos.x >= Size.x || pos.y >= Size.y) return null;
             else return _spaces[pos.x, pos.y];
+        }
+
+        public int GetNumPieces()
+        {
+            var count = 0;
+            for (var x = 0; x < Size.x; x++)
+            {
+                for (var y = 0; y < Size.y; y++)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public IEnumerable<SpaceModel> GetPiecesForPlayer(PlayerModel owner)
+        {
+            for (var x = 0; x < Size.x; x++)
+            {
+                for (var y = 0; y < Size.y; y++)
+                {
+                    var space = _spaces[x, y];
+                    var piece = space.Piece;
+                    if (piece != null && piece.Owner == owner)
+                    {
+                        yield return space;
+                    }
+                }
+            }
+        }
+
+        public int GetNumPiecesForPlayer(PlayerModel owner)
+        {
+            var count = 0;
+            for (var x = 0; x < Size.x; x++)
+            {
+                for (var y = 0; y < Size.y; y++)
+                {
+                    var piece = _spaces[x, y].Piece;
+                    if (piece != null && piece.Owner == owner)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
         }
 
         public IEnumerable<SpaceModel> GetColumnOfSpaces(int xColumn)
@@ -235,29 +276,29 @@ namespace Assets.Petteia.Scripts.Model
             if (IsHorizontalStraightLine(from, to))
             {
                 var row = GetRowOfSpaces(from.y);
-                if(from.x < to.x)
+                if (from.x < to.x)
                 {
                     // left to right
-                    return row.SkipWhile(space => space.Pos.x <= from.x).TakeUntil(space => space.Pos.x == to.x);
+                    return row.Where(space => space.Pos.x > from.x && space.Pos.x < to.x);
                 }
                 else
                 {
                     // right to left
-                    return row.Reverse().SkipWhile(space => space.Pos.x <= from.x).TakeUntil(space => space.Pos.x == to.x);
+                    return row.Where(space => space.Pos.x > to.x && space.Pos.x < from.x);
                 }
             }
             else if (IsVerticalStraightLine(from, to))
             {
                 var col = GetColumnOfSpaces(from.x);
-                if (from.y < to.y)
+                if (from.y > to.y)
                 {
                     // bottom to top
-                    return col.SkipWhile(space => space.Pos.y <= from.y).TakeUntil(space => space.Pos.y == to.y);
+                    return col.Where(space => space.Pos.y < from.y && space.Pos.y > to.y);
                 }
                 else
                 {
                     // top to bottom
-                    return col.Reverse().SkipWhile(space => space.Pos.y <= from.y).TakeUntil(space => space.Pos.y == to.y);
+                    return col.Where(space => space.Pos.y < to.y && space.Pos.y > from.y);
                 }
             }
             else

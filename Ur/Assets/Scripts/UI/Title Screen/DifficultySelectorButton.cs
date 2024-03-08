@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class DifficultySelectorButton : MonoBehaviour
 {
-	public UrAIController.AIDifficulty difficulty;
+	public AIDifficulty difficulty;
 
 	public void SetDifficulty() {
 		if (GameManager.SelectedDifficulty != difficulty) {

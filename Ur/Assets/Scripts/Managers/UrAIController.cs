@@ -1,3 +1,4 @@
+using MiniGameFramework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,8 +6,6 @@ using UnityEngine;
 
 public class UrAIController : MonoBehaviour
 {
-	public enum AIDifficulty { Easy, Medium, Hard, None }
-
 	public List<UrPiece> enemyPieces;
 
 	public float midTurnPause = 0.5f;
