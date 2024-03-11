@@ -95,7 +95,16 @@ namespace Assets.Petteia.Scripts.Model
                 }
             }
 
-            // TODO: Kennesaw students added a special rule for capturing in the 4 corners of the board, since those would be safe spaces otherwise
+            // Kennesaw students added a special rule for capturing in the 4 corners of the board, since those would be safe spaces otherwise
+            var cornerSpaces = board.GetCornerSpaces().Where(space => !board.IsSpaceEmpty(space) && board.GetPieceAt(space).Owner != currentTurn);
+            foreach (var corner in cornerSpaces)
+            {
+                var capturingSpaces = board.GetAdjacentSpaces(corner);
+                if(capturingSpaces.All(pos => board.GetPieceAt(pos)?.Owner == currentTurn))
+                {
+                    yield return corner;
+                }
+            }
         }
 
         virtual public bool IsValidMove(BoardStateModel board, Vector2Int from, Vector2Int to)
@@ -336,6 +345,14 @@ namespace Assets.Petteia.Scripts.Model
             if (IsInBounds(right)) yield return right;
             if (IsInBounds(below)) yield return below;
             if (IsInBounds(above)) yield return above;
+        }
+
+        public IEnumerable<Vector2Int> GetCornerSpaces()
+        {
+            yield return new Vector2Int(0, 0);
+            yield return new Vector2Int(0, _height - 1);
+            yield return new Vector2Int(_width - 1, 0);
+            yield return new Vector2Int(_width - 1, _height - 1);
         }
 
         public Vector2Int GetDir(Vector2Int from, Vector2Int to)

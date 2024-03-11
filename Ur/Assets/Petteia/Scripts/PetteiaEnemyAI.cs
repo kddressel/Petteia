@@ -196,6 +196,7 @@ public class PetteiaEnemyAI : MonoBehaviour
 
 		PetteiaPosition piecePos = piece.GetComponent<PetteiaPosition>();
 
+		var origPos = piecePos.Pos;
 		x = piecePos.Pos.x;
 		y = piecePos.Pos.y;
 		pController.positions[x, y] = 0;
@@ -223,7 +224,7 @@ public class PetteiaEnemyAI : MonoBehaviour
 
 		//pController.PlayMoveSound();
 		pController.positions[x, y] = 1;
-		pController.LastMove = new Vector2Int(x, y);
+		pController.LastMove = (origPos, new Vector2Int(x, y));
 	}
 
 	/// <summary>

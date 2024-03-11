@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using MiniGameFramework;
+using Assets.Petteia.Scripts.Model;
 
 public class PetteiaGameController : MonoBehaviour
 {
@@ -232,6 +233,36 @@ public class PetteiaGameController : MonoBehaviour
     /// </summary>
     public void CheckCapture()
     {
+        var playerDefs = new PlayerDef[]
+        {
+                new PlayerDef { Name = "You (X)", AgentType = typeof(HumanPlayerAgent) },
+                new PlayerDef { Name = "Other (O)", AgentType = typeof(HumanPlayerAgent) }
+        };
+
+        var gameModel = new GameModel<RulesSet>(playerDefs, 8, 8);
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                if (positions[x, y] == 1)
+                {
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(x, y));
+                }
+                else if (positions[x, y] == 2)
+                {
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(x, y));
+                }
+            }
+        }
+
+        var captures = gameModel.Rules.GetSpacesToCaptureInMove(gameModel.Board, !PlayerTurn ? gameModel.Players[0] : gameModel.Players[1], LastMove.Item1, LastMove.Item2);
+        foreach(var capture in captures)
+        {
+            Debug.Log("Piece captured");
+            StartCoroutine(CapturePiece(capture.x, capture.y));
+        }
+
+        /*
         for (int y = 0; y < 8; y++)
         {
             for (int x = 0; x < 8; x++)
@@ -281,6 +312,7 @@ public class PetteiaGameController : MonoBehaviour
                 }
             }
         }
+        */
     }
 
     /// <summary>
@@ -496,10 +528,10 @@ public class PetteiaGameController : MonoBehaviour
     {
         positions[oldPos.x, oldPos.y] = 0;
         positions[newPos.x, newPos.y] = tag == playerTag ? 2 : 1;
-        LastMove = newPos;
+        LastMove = (oldPos, newPos);
     }
 
-    public Vector2Int LastMove { get; set; }
+    public (Vector2Int, Vector2Int) LastMove { get; set; }
 
 
     private Vector2Int PosToArray(float y, float x)
