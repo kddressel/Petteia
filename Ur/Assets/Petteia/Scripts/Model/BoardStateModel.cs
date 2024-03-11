@@ -142,6 +142,11 @@ namespace Assets.Petteia.Scripts.Model
     {
         int _width;
         int _height;
+
+        // PERF: cache counts for performance
+        int _numPieces;
+        Dictionary<PlayerModel, int> _numPiecesPerPlayer;
+
         Dictionary<Vector2Int, SpaceModel> _spaces;
 
         public Vector2Int Size => new Vector2Int(_width, _height);
@@ -151,6 +156,10 @@ namespace Assets.Petteia.Scripts.Model
             _width = width;
             _height = height;
             _spaces = new Dictionary<Vector2Int, SpaceModel>();
+
+            // PERF: cache counts for performance
+            _numPieces = 0;
+            _numPiecesPerPlayer = new Dictionary<PlayerModel, int>();
         }
 
         public BoardStateModel Clone()
@@ -160,7 +169,26 @@ namespace Assets.Petteia.Scripts.Model
             {
                 clone._spaces.Add(kvp.Key, kvp.Value.Clone());
             }
+            foreach(var kvp in _numPiecesPerPlayer)
+            {
+                clone._numPiecesPerPlayer.Add(kvp.Key, kvp.Value);
+            }
+
+            clone._width = _width;
+            clone._height = _height;
+            clone._numPieces = _numPieces;
+
             return clone;
+        }
+
+        static void IncrementPieceCounts(BoardStateModel board, PlayerModel forPlayer, int incBy)
+        {
+            board._numPieces += incBy;
+            if (!board._numPiecesPerPlayer.ContainsKey(forPlayer))
+            {
+                board._numPiecesPerPlayer.Add(forPlayer, 0);
+            }
+            board._numPiecesPerPlayer[forPlayer] += incBy;
         }
 
         public BoardStateModel PlaceNewPiece(PlayerModel forPlayer, Vector2Int onSpacePos)
@@ -171,14 +199,26 @@ namespace Assets.Petteia.Scripts.Model
 
             var clone = Clone();
             clone.GetOrCreateSpaceAt(onSpace.Pos).Piece = new PieceModel(forPlayer);
+            IncrementPieceCounts(clone, forPlayer, 1);
             return clone;
         }
 
         public BoardStateModel RemovePiece(Vector2Int onSpacePos)
         {
             var clone = Clone();
-            clone.GetOrCreateSpaceAt(onSpacePos).Piece = null;
+            clone.RemovePieceInPlace(onSpacePos);
             return clone;
+        }
+
+        // PERF: Removing a piece always happens as part of a move, so we can reuse the move's clone to avoid unnecessary cloning
+        public void RemovePieceInPlace(Vector2Int onSpacePos)
+        {
+            var space = GetOrCreateSpaceAt(onSpacePos);
+            if (space.Piece != null)
+            {
+                IncrementPieceCounts(this, space.Piece.Owner, -1);
+                space.Piece = null;
+            }
         }
 
         public BoardStateModel MovePiece(Vector2Int fromSpacePos, Vector2Int toSpacePos)
@@ -194,8 +234,6 @@ namespace Assets.Petteia.Scripts.Model
 
             return clone;
         }
-
-
 
         bool IsInBounds(Vector2Int pos)
         {
@@ -215,19 +253,7 @@ namespace Assets.Petteia.Scripts.Model
             else return _spaces[pos];
         }
 
-        public int GetNumPieces()
-        {
-            var count = 0;
-            foreach(var space in _spaces)
-            {
-                if(space.Value.Piece != null)
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-
+        public int GetNumPieces() => _numPieces;
         public IEnumerable<Vector2Int> GetPiecesForPlayer(PlayerModel owner)
         {
             foreach (var kvp in _spaces)
@@ -241,20 +267,7 @@ namespace Assets.Petteia.Scripts.Model
             }
         }
 
-        public int GetNumPiecesForPlayer(PlayerModel owner)
-        {
-            var count = 0;
-            foreach (var kvp in _spaces)
-            {
-                var space = kvp.Value;
-                var piece = space.Piece;
-                if (piece != null && piece.Owner == owner)
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
+        public int GetNumPiecesForPlayer(PlayerModel owner) => _numPiecesPerPlayer.ContainsKey(owner) ? _numPiecesPerPlayer[owner] : 0;
 
         public IEnumerable<Vector2Int> GetColumnOfSpaces(int xColumn)
         {

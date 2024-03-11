@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum AIDifficulty { Easy, Medium, Hard, None }
+public enum AIDifficulty { VeryEasy, Easy, Medium, Hard, VeryHard, None }
 
 public class GameManager : MonoBehaviour
 {

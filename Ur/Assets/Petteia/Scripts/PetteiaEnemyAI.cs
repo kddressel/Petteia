@@ -57,12 +57,13 @@ public class PetteiaEnemyAI : MonoBehaviour
 	int GetMaxDepthForDifficulty(AIDifficulty difficulty)
     {
 		switch(difficulty)
-        {
-			case AIDifficulty.Easy: return 1;
+		{
+			case AIDifficulty.VeryEasy: return 1;
+			case AIDifficulty.Easy: return 2;
 			default:
 			case AIDifficulty.Medium: return 3;
-			case AIDifficulty.Hard: return 5;
-			// 5 takes too long to compute moves, but might be viable if we store just the piece positions and not a whole board grid for every state
+			case AIDifficulty.Hard: return 4;
+			case AIDifficulty.VeryHard: return 5;
         }
     }
 

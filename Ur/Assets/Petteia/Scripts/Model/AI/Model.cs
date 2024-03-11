@@ -132,7 +132,7 @@ namespace Shiny.Solver
                         var newBoard = node.BoardState.MovePiece(spaceWithPiece, move);
                         foreach (var pieceToRemove in Rules.GetSpacesToCaptureInMove(newBoard, currTurnPlayer, spaceWithPiece, move))
                         {
-                            newBoard = newBoard.RemovePiece(pieceToRemove);
+                            newBoard.RemovePieceInPlace(pieceToRemove);
                         }
 
                         //UnityEngine.Debug.Log("possible next state - from: " + spaceWithPiece.Pos + " to " + move.Pos);
@@ -173,8 +173,9 @@ namespace Shiny.Solver
             }
 
             // we have a forced choice for turn 0
+            // game ends when you're down to only one piece
             public bool IsEnd(BoardStateNode node) => (HasValidManualTurn(node.BoardState, Turn) && node.Parent != null) || 
-                node.BoardState.GetNumPiecesForPlayer(Players.First()) == 0 || node.BoardState.GetNumPiecesForPlayer(Players.Last()) == 0;
+                node.BoardState.GetNumPiecesForPlayer(Players.First()) == 1 || node.BoardState.GetNumPiecesForPlayer(Players.Last()) == 1;
         }
     }
 }

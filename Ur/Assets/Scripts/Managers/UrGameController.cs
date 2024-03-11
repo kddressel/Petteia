@@ -479,6 +479,7 @@ public class UrGameController : MonoBehaviour
         modalBlocker.SetActive(true);
         gameOverText.text = $"<size=60><b>Congratulations!</b></size>\n\nTotal Turns: {turnCount}\n\n";
 
+		// TODO: Update with new difficulties, maybe use JSON to save instead of playerprefs
 		string winsKey, totalKey, shortestKey, longestKey;
 		switch (GameManager.SelectedDifficulty) {
 			case AIDifficulty.Easy:

@@ -179,7 +179,7 @@ namespace Assets.Petteia.Scripts.Model
                     var captures = gameModel.Rules.GetSpacesToCaptureInMove(gameModel.Board, tester._currentTurn, fromPos, toPos);
                     foreach (var capture in captures)
                     {
-                        gameModel.Board = gameModel.Board.RemovePiece(capture);
+                        gameModel.Board.RemovePieceInPlace(capture);
                     }
 
                     // usually you want to be able to move the piece again, so swap them each move
