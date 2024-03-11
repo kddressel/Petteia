@@ -63,7 +63,17 @@ namespace Shiny.Threads
 
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> self)
         {
-            return self.OrderBy(k => Random.NextDouble());
+            List<T> shuffledList = self.ToList();
+            int n = shuffledList.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = Random.Next(0, n + 1);
+                T value = shuffledList[k];
+                shuffledList[k] = shuffledList[n];
+                shuffledList[n] = value;
+            }
+            return shuffledList;
         }
 
         public static T RandomElement<T>(this Array self)

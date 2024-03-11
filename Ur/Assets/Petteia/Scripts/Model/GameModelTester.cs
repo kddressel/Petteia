@@ -35,8 +35,8 @@ namespace Assets.Petteia.Scripts.Model
 
             for (var i = 0; i < 8; i++)
             {
-                gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], gameModel.Board.GetSpaceAt(new Vector2Int(i, 0)));
-                gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], gameModel.Board.GetSpaceAt(new Vector2Int(i, 7)));
+                gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(i, 0));
+                gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(i, 7));
             }
         }
 
@@ -153,7 +153,7 @@ namespace Assets.Petteia.Scripts.Model
                     var player = gameModel.Players[int.Parse(_player)];
                     var pos = new Vector2Int(int.Parse(_toXPos), int.Parse(_toYPos));
 
-                    gameModel.Board = gameModel.Board.PlaceNewPiece(player, gameModel.Board.GetSpaceAt(pos));
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(player, pos);
                 }
 
                 EditorGUILayout.LabelField("----Move Pieces----");
@@ -173,13 +173,13 @@ namespace Assets.Petteia.Scripts.Model
                     var fromPos = new Vector2Int(int.Parse(_fromXPos), int.Parse(_fromYPos));
                     var toPos = new Vector2Int(int.Parse(_toXPos), int.Parse(_toYPos));
 
-                    gameModel.Board = gameModel.Board.MovePiece(gameModel.Board.GetSpaceAt(fromPos), gameModel.Board.GetSpaceAt(toPos));
+                    gameModel.Board = gameModel.Board.MovePiece(fromPos, toPos);
 
                     // do captures
                     var captures = gameModel.Rules.GetSpacesToCaptureInMove(gameModel.Board, tester._currentTurn, fromPos, toPos);
                     foreach (var capture in captures)
                     {
-                        gameModel.Board = gameModel.Board.RemovePiece(gameModel.Board.GetSpaceAt(capture));
+                        gameModel.Board = gameModel.Board.RemovePiece(capture);
                     }
 
                     // usually you want to be able to move the piece again, so swap them each move
@@ -224,16 +224,16 @@ namespace Assets.Petteia.Scripts.Model
                     var row = "";
                     for (var x = 0; x < gameModel.Board.Size.x; x++)
                     {
-                        var space = gameModel.Board.GetSpaceAt(new Vector2Int(x, y));
-                        if (space.IsEmpty)
+                        var piece = gameModel.Board.GetPieceAt(new Vector2Int(x, y));
+                        if (piece == null)
                         {
                             row += " _ ";
                         }
-                        else if (space.Piece.Owner == gameModel.Players[0])
+                        else if (piece.Owner == gameModel.Players[0])
                         {
                             row += " X ";
                         }
-                        else if (space.Piece.Owner == gameModel.Players[1])
+                        else if (piece.Owner == gameModel.Players[1])
                         {
                             row += " O ";
                         }

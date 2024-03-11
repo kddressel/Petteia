@@ -81,17 +81,17 @@ namespace Assets.Petteia.Scripts.Model
         virtual public IEnumerable<Vector2Int> GetSpacesToCaptureInMove(BoardStateModel board, PlayerModel currentTurn, Vector2Int from, Vector2Int to)
         {
             var isValid = IsValidMove(board, from, to);
-            var adjacentEnemySpaces = board.GetAdjacentSpaces(to).Where(space => !space.IsEmpty && space.Piece.Owner != currentTurn);
+            var adjacentEnemySpaces = board.GetAdjacentSpaces(to).Where(space => !board.IsSpaceEmpty(space) && board.GetPieceAt(space).Owner != currentTurn);
 
             // it is supposed to multi-capture if you surround pieces in multiple directions
             // moving your piece between two enemy pieces isn't a capture. enemy has to move to capture, so we need to check who's turn it is
             // TODO: Is it supposed to capture every piece in a line if there are multiple?
             foreach (var enemySpace in adjacentEnemySpaces)
             {
-                var capturingSpace = board.GetNextInSameDirection(to, enemySpace.Pos);
-                if (capturingSpace != null && capturingSpace.Piece?.Owner == currentTurn)
+                var capturingSpace = board.GetNextInSameDirection(to, enemySpace);
+                if (capturingSpace != null && board.GetPieceAt(capturingSpace)?.Owner == currentTurn)
                 {
-                    yield return enemySpace.Pos;
+                    yield return enemySpace;
                 }
             }
 
@@ -102,7 +102,7 @@ namespace Assets.Petteia.Scripts.Model
         {
             var isStraightLine = board.IsStraightLine(from, to);
             var isNotOccupied = board.IsSpaceEmpty(to);
-            var isNotBlocked = board.GetLineOfSpaces(from, to).All(space => space.IsEmpty);
+            var isNotBlocked = board.GetLineOfSpaces(from, to).All(space => board.IsSpaceEmpty(space));
 
             return isStraightLine && isNotOccupied && isNotBlocked;
         }
@@ -121,7 +121,7 @@ namespace Assets.Petteia.Scripts.Model
         }
     }
 
-    public class SpaceModel
+    class SpaceModel
     {
         public Vector2Int Pos { get; private set; }
         public PieceModel Piece { get; internal set; }
@@ -140,77 +140,87 @@ namespace Assets.Petteia.Scripts.Model
 
     public class BoardStateModel
     {
-        // TODO: Consider representing this as lists of pieces instead for performance in AI move space searching
-        readonly SpaceModel[,] _spaces;
+        int _width;
+        int _height;
+        Dictionary<Vector2Int, SpaceModel> _spaces;
 
-        public Vector2Int Size => new Vector2Int(_spaces.GetLength(0), _spaces.GetLength(1));
+        public Vector2Int Size => new Vector2Int(_width, _height);
 
         public BoardStateModel(int width, int height)
         {
-            _spaces = new SpaceModel[width, height];
-            for (var x = 0; x < Size.x; x++)
-            {
-                for (var y = 0; y < Size.y; y++)
-                {
-                    _spaces[x, y] = new SpaceModel(new Vector2Int(x, y)) { Piece = null };
-                }
-            }
+            _width = width;
+            _height = height;
+            _spaces = new Dictionary<Vector2Int, SpaceModel>();
         }
 
         public BoardStateModel Clone()
         {
             var clone = new BoardStateModel(Size.x, Size.y);
-            for (var x = 0; x < Size.x; x++)
+            foreach(var kvp in _spaces)
             {
-                for (var y = 0; y < Size.y; y++)
-                {
-                    clone._spaces[x, y] = _spaces[x, y].Clone();
-                }
+                clone._spaces.Add(kvp.Key, kvp.Value.Clone());
             }
             return clone;
         }
 
-        public BoardStateModel PlaceNewPiece(PlayerModel forPlayer, SpaceModel onSpace)
+        public BoardStateModel PlaceNewPiece(PlayerModel forPlayer, Vector2Int onSpacePos)
         {
+            var onSpace = GetOrCreateSpaceAt(onSpacePos);
+
             Debug.Assert(onSpace.Piece == null);
 
             var clone = Clone();
-            clone.GetSpaceAt(onSpace.Pos).Piece = new PieceModel(forPlayer);
+            clone.GetOrCreateSpaceAt(onSpace.Pos).Piece = new PieceModel(forPlayer);
             return clone;
         }
 
-        public BoardStateModel RemovePiece(SpaceModel onSpace)
+        public BoardStateModel RemovePiece(Vector2Int onSpacePos)
         {
             var clone = Clone();
-            clone.GetSpaceAt(onSpace.Pos).Piece = null;
+            clone.GetOrCreateSpaceAt(onSpacePos).Piece = null;
             return clone;
         }
 
-        public BoardStateModel MovePiece(SpaceModel fromSpace, SpaceModel toSpace)
+        public BoardStateModel MovePiece(Vector2Int fromSpacePos, Vector2Int toSpacePos)
         {
             var clone = Clone();
+            var fromSpace = GetOrCreateSpaceAt(fromSpacePos);
             var movePiece = fromSpace.Piece;
-            clone.GetSpaceAt(fromSpace.Pos).Piece = null;
+            clone.GetOrCreateSpaceAt(fromSpace.Pos).Piece = null;
 
             Debug.Assert(movePiece != null);
 
-            clone.GetSpaceAt(toSpace.Pos).Piece = movePiece;
+            clone.GetOrCreateSpaceAt(toSpacePos).Piece = movePiece;
 
             return clone;
         }
 
-        public SpaceModel GetSpaceAt(Vector2Int pos)
+
+
+        bool IsInBounds(Vector2Int pos)
         {
-            if (pos.x < 0 || pos.y < 0 || pos.x >= Size.x || pos.y >= Size.y) return null;
-            else return _spaces[pos.x, pos.y];
+            if (pos.x < 0 || pos.y < 0 || pos.x >= Size.x || pos.y >= Size.y) return false;
+            else return true;
+        }
+
+        SpaceModel GetOrCreateSpaceAt(Vector2Int pos)
+        {
+            if (!IsInBounds(pos)) return null;
+            else if (!_spaces.ContainsKey(pos))
+            {
+                var space = new SpaceModel(pos) { Piece = null };
+                _spaces.Add(pos, space);
+                return space;
+            }
+            else return _spaces[pos];
         }
 
         public int GetNumPieces()
         {
             var count = 0;
-            for (var x = 0; x < Size.x; x++)
+            foreach(var space in _spaces)
             {
-                for (var y = 0; y < Size.y; y++)
+                if(space.Value.Piece != null)
                 {
                     count++;
                 }
@@ -218,18 +228,15 @@ namespace Assets.Petteia.Scripts.Model
             return count;
         }
 
-        public IEnumerable<SpaceModel> GetPiecesForPlayer(PlayerModel owner)
+        public IEnumerable<Vector2Int> GetPiecesForPlayer(PlayerModel owner)
         {
-            for (var x = 0; x < Size.x; x++)
+            foreach (var kvp in _spaces)
             {
-                for (var y = 0; y < Size.y; y++)
+                var space = kvp.Value;
+                var piece = space.Piece;
+                if (piece != null && piece.Owner == owner)
                 {
-                    var space = _spaces[x, y];
-                    var piece = space.Piece;
-                    if (piece != null && piece.Owner == owner)
-                    {
-                        yield return space;
-                    }
+                    yield return space.Pos;
                 }
             }
         }
@@ -237,33 +244,31 @@ namespace Assets.Petteia.Scripts.Model
         public int GetNumPiecesForPlayer(PlayerModel owner)
         {
             var count = 0;
-            for (var x = 0; x < Size.x; x++)
+            foreach (var kvp in _spaces)
             {
-                for (var y = 0; y < Size.y; y++)
+                var space = kvp.Value;
+                var piece = space.Piece;
+                if (piece != null && piece.Owner == owner)
                 {
-                    var piece = _spaces[x, y].Piece;
-                    if (piece != null && piece.Owner == owner)
-                    {
-                        count++;
-                    }
+                    count++;
                 }
             }
             return count;
         }
 
-        public IEnumerable<SpaceModel> GetColumnOfSpaces(int xColumn)
+        public IEnumerable<Vector2Int> GetColumnOfSpaces(int xColumn)
         {
             for (var y = 0; y < Size.y; y++)
             {
-                yield return _spaces[xColumn, y];
+                yield return new Vector2Int(xColumn, y);
             }
         }
 
-        public IEnumerable<SpaceModel> GetRowOfSpaces(int yRow)
+        public IEnumerable<Vector2Int> GetRowOfSpaces(int yRow)
         {
             for (var x = 0; x < Size.x; x++)
             {
-                yield return _spaces[x, yRow];
+                yield return new Vector2Int(x, yRow);
             }
         }
 
@@ -271,7 +276,7 @@ namespace Assets.Petteia.Scripts.Model
         public bool IsVerticalStraightLine(Vector2Int from, Vector2Int to) => from.x == to.x;
         public bool IsHorizontalStraightLine(Vector2Int from, Vector2Int to) => from.y == to.y;
 
-        public IEnumerable<SpaceModel> GetLineOfSpaces(Vector2Int from, Vector2Int to)
+        public IEnumerable<Vector2Int> GetLineOfSpaces(Vector2Int from, Vector2Int to)
         {
             if (IsHorizontalStraightLine(from, to))
             {
@@ -279,12 +284,12 @@ namespace Assets.Petteia.Scripts.Model
                 if (from.x < to.x)
                 {
                     // left to right
-                    return row.Where(space => space.Pos.x > from.x && space.Pos.x < to.x);
+                    return row.Where(space => space.x > from.x && space.x < to.x);
                 }
                 else
                 {
                     // right to left
-                    return row.Where(space => space.Pos.x > to.x && space.Pos.x < from.x);
+                    return row.Where(space => space.x > to.x && space.x < from.x);
                 }
             }
             else if (IsVerticalStraightLine(from, to))
@@ -293,31 +298,31 @@ namespace Assets.Petteia.Scripts.Model
                 if (from.y > to.y)
                 {
                     // bottom to top
-                    return col.Where(space => space.Pos.y < from.y && space.Pos.y > to.y);
+                    return col.Where(space => space.y < from.y && space.y > to.y);
                 }
                 else
                 {
                     // top to bottom
-                    return col.Where(space => space.Pos.y < to.y && space.Pos.y > from.y);
+                    return col.Where(space => space.y < to.y && space.y > from.y);
                 }
             }
             else
             {
-                return Enumerable.Empty<SpaceModel>();
+                return Enumerable.Empty<Vector2Int>();
             }
         }
 
-        public IEnumerable<SpaceModel> GetAdjacentSpaces(Vector2Int pos)
+        public IEnumerable<Vector2Int> GetAdjacentSpaces(Vector2Int pos)
         {
-            var left = GetSpaceAt(pos - new Vector2Int(1, 0));
-            var right = GetSpaceAt(pos + new Vector2Int(1, 0));
-            var below = GetSpaceAt(pos - new Vector2Int(0, 1));
-            var above = GetSpaceAt(pos + new Vector2Int(0, 1));
+            var left = pos - new Vector2Int(1, 0);
+            var right = pos + new Vector2Int(1, 0);
+            var below = pos - new Vector2Int(0, 1);
+            var above = pos + new Vector2Int(0, 1);
 
-            if (left != null) yield return left;
-            if (right != null) yield return right;
-            if (below != null) yield return below;
-            if (above != null) yield return above;
+            if (IsInBounds(left)) yield return left;
+            if (IsInBounds(right)) yield return right;
+            if (IsInBounds(below)) yield return below;
+            if (IsInBounds(above)) yield return above;
         }
 
         public Vector2Int GetDir(Vector2Int from, Vector2Int to)
@@ -332,22 +337,28 @@ namespace Assets.Petteia.Scripts.Model
             return dir;
         }
 
-        public SpaceModel GetNextInSameDirection(Vector2Int from, Vector2Int to)
+        public Vector2Int GetNextInSameDirection(Vector2Int from, Vector2Int to)
         {
             var dir = GetDir(from, to);
-            return GetSpaceAt(to + dir);
+            return to + dir;
         }
 
         public PieceModel GetPieceAt(Vector2Int pos)
         {
-            var space = GetSpaceAt(pos);
-            return space?.Piece;
+            if (!IsInBounds(pos)) return null;
+            if (!_spaces.ContainsKey(pos)) return null;
+
+            var space = GetOrCreateSpaceAt(pos);
+            return space.Piece;
         }
 
         public bool IsSpaceEmpty(Vector2Int pos)
         {
-            var space = GetSpaceAt(pos);
-            return space != null ? space.IsEmpty : true;
+            if (!IsInBounds(pos)) return true;
+            if (!_spaces.ContainsKey(pos)) return true;
+
+            var space = GetOrCreateSpaceAt(pos);
+            return space.IsEmpty;
         }
     }
     #endregion

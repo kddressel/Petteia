@@ -61,7 +61,7 @@ public class PetteiaEnemyAI : MonoBehaviour
 			case AIDifficulty.Easy: return 1;
 			default:
 			case AIDifficulty.Medium: return 3;
-			case AIDifficulty.Hard: return 4;
+			case AIDifficulty.Hard: return 5;
 			// 5 takes too long to compute moves, but might be viable if we store just the piece positions and not a whole board grid for every state
         }
     }
@@ -120,13 +120,13 @@ public class PetteiaEnemyAI : MonoBehaviour
 		{
 			var piecePos = enemyPiece.GetComponent<PetteiaPosition>().Pos;
 			piecePos = ViewToBoard(piecePos);
-			gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], gameModel.Board.GetSpaceAt(piecePos));
+			gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], piecePos);
 		}
 		foreach(var playerPiece in pController.playerPieces)
 		{
 			var piecePos = playerPiece.pieceStartPos;
 			piecePos = ViewToBoard(piecePos);
-			gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], gameModel.Board.GetSpaceAt(piecePos));
+			gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], piecePos);
 		}
 
 		var startNode = new BoardStateNode(null, gameModel.Board, gameModel.Players[0], gameModel.Players[1], null);
@@ -147,7 +147,7 @@ public class PetteiaEnemyAI : MonoBehaviour
 			var moveInfo = _queuedMove;
 			_queuedMove = null;
 
-			PetteiaEnemyPiece pieceToMove = pieces.FirstOrDefault(piece => piece.GetComponent<PetteiaPosition>().Pos == BoardToView(moveInfo.from.Pos));
+			PetteiaEnemyPiece pieceToMove = pieces.FirstOrDefault(piece => piece.GetComponent<PetteiaPosition>().Pos == BoardToView(moveInfo.from));
 			if (pieceToMove != null)
 			{
 				yield return StartCoroutine(MovePiece(pieceToMove.gameObject, GetDirFromMoveInfo(moveInfo), GetDistFromMoveInfo(moveInfo)));
@@ -166,12 +166,12 @@ public class PetteiaEnemyAI : MonoBehaviour
 	int GetDistFromMoveInfo(MoveInfo moveInfo)
     {
 		// we know they always move in a straight line, so this Distance function is safe to use
-		return Mathf.RoundToInt(Vector2Int.Distance(moveInfo.from.Pos, moveInfo.to.Pos));
+		return Mathf.RoundToInt(Vector2Int.Distance(moveInfo.from, moveInfo.to));
     }
 
 	string GetDirFromMoveInfo(MoveInfo moveInfo)
     {
-		var diff = moveInfo.to.Pos - moveInfo.from.Pos;
+		var diff = moveInfo.to - moveInfo.from;
 		Debug.Log("move diff of " + diff);
 		if (diff.x == 0 && diff.y > 0) return "down";
 		else if (diff.x == 0 && diff.y < 0) return "up";

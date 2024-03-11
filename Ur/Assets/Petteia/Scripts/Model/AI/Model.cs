@@ -10,8 +10,8 @@ namespace Shiny.Solver
     {
         public class MoveInfo
         {
-            public SpaceModel from;
-            public SpaceModel to;
+            public UnityEngine.Vector2Int from;
+            public UnityEngine.Vector2Int to;
         }
 
         public class BoardStateNode : GameNode
@@ -121,18 +121,18 @@ namespace Shiny.Solver
             public IEnumerable<BoardStateNode> GetReachable(BoardStateNode node)
             {
                 var currTurnPlayer = node.ActivePlayer as PlayerModel;
-                foreach (var spaceWithPiece in node.BoardState.GetPiecesForPlayer(currTurnPlayer).Shuffle().ToList())
+                foreach (var spaceWithPiece in node.BoardState.GetPiecesForPlayer(currTurnPlayer).Shuffle())
                 {
-                    var validMovesRow = node.BoardState.GetRowOfSpaces(spaceWithPiece.Pos.y).Where(move => Rules.IsValidMove(node.BoardState, spaceWithPiece.Pos, move.Pos));
-                    var validMovesCol = node.BoardState.GetColumnOfSpaces(spaceWithPiece.Pos.x).Where(move => Rules.IsValidMove(node.BoardState, spaceWithPiece.Pos, move.Pos));
+                    var validMovesRow = node.BoardState.GetRowOfSpaces(spaceWithPiece.y).Where(move => Rules.IsValidMove(node.BoardState, spaceWithPiece, move));
+                    var validMovesCol = node.BoardState.GetColumnOfSpaces(spaceWithPiece.x).Where(move => Rules.IsValidMove(node.BoardState, spaceWithPiece, move));
 
-                    var validMoves = validMovesRow.Concat(validMovesCol).Shuffle().ToList();
+                    var validMoves = validMovesRow.Concat(validMovesCol).Shuffle();
                     foreach (var move in validMoves)
                     {
                         var newBoard = node.BoardState.MovePiece(spaceWithPiece, move);
-                        foreach (var pieceToRemove in Rules.GetSpacesToCaptureInMove(newBoard, currTurnPlayer, spaceWithPiece.Pos, move.Pos))
+                        foreach (var pieceToRemove in Rules.GetSpacesToCaptureInMove(newBoard, currTurnPlayer, spaceWithPiece, move))
                         {
-                            newBoard = newBoard.RemovePiece(newBoard.GetSpaceAt(pieceToRemove));
+                            newBoard = newBoard.RemovePiece(pieceToRemove);
                         }
 
                         //UnityEngine.Debug.Log("possible next state - from: " + spaceWithPiece.Pos + " to " + move.Pos);
@@ -169,7 +169,7 @@ namespace Shiny.Solver
             virtual protected bool IsMatchingMoveForManualTurn(BoardStateModel board, int turn, MoveInfo move)
             {
                 var possibleMoves = ManualTurns.Where(manual => manual.Turn == turn);
-                return possibleMoves.Any(manual => manual.From == move.from.Pos && manual.To == move.to.Pos && Rules.IsValidMove(board, manual.From, manual.To));
+                return possibleMoves.Any(manual => manual.From == move.from && manual.To == move.to && Rules.IsValidMove(board, manual.From, manual.To));
             }
 
             // we have a forced choice for turn 0
