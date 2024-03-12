@@ -111,7 +111,7 @@ namespace Assets.Petteia.Scripts.Model
         {
             var isStraightLine = board.IsStraightLine(from, to);
             var isNotOccupied = board.IsSpaceEmpty(to);
-            var isNotBlocked = board.GetLineOfSpaces(from, to).All(space => board.IsSpaceEmpty(space));
+            var isNotBlocked = board.IsWholeLineEmpty(from, to);
 
             return isStraightLine && isNotOccupied && isNotBlocked;
         }
@@ -298,40 +298,36 @@ namespace Assets.Petteia.Scripts.Model
         public bool IsVerticalStraightLine(Vector2Int from, Vector2Int to) => from.x == to.x;
         public bool IsHorizontalStraightLine(Vector2Int from, Vector2Int to) => from.y == to.y;
 
-        public IEnumerable<Vector2Int> GetLineOfSpaces(Vector2Int from, Vector2Int to)
+        public bool IsWholeLineEmpty(Vector2Int from, Vector2Int to)
         {
-            if (IsHorizontalStraightLine(from, to))
+            if (IsVerticalStraightLine(from, to))
             {
-                var row = GetRowOfSpaces(from.y);
-                if (from.x < to.x)
+                // column
+                var minY = Mathf.Min(from.y, to.y);
+                var maxY = Mathf.Max(from.y, to.y);
+                for (var y = minY + 1; y < maxY; y++)
                 {
-                    // left to right
-                    return row.Where(space => space.x > from.x && space.x < to.x);
-                }
-                else
-                {
-                    // right to left
-                    return row.Where(space => space.x > to.x && space.x < from.x);
-                }
-            }
-            else if (IsVerticalStraightLine(from, to))
-            {
-                var col = GetColumnOfSpaces(from.x);
-                if (from.y > to.y)
-                {
-                    // bottom to top
-                    return col.Where(space => space.y < from.y && space.y > to.y);
-                }
-                else
-                {
-                    // top to bottom
-                    return col.Where(space => space.y < to.y && space.y > from.y);
+                    if (!IsSpaceEmpty(new Vector2Int(from.x, y)))
+                    {
+                        return false;
+                    }
                 }
             }
             else
             {
-                return Enumerable.Empty<Vector2Int>();
+                // row
+                var minX = Mathf.Min(from.x, to.x);
+                var maxX = Mathf.Max(from.x, to.x);
+                for (var x = minX + 1; x < maxX; x++)
+                {
+                    if (!IsSpaceEmpty(new Vector2Int(x, from.y)))
+                    {
+                        return false;
+                    }
+                }
             }
+
+            return true;
         }
 
         public IEnumerable<Vector2Int> GetAdjacentSpaces(Vector2Int pos)
