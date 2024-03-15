@@ -54,6 +54,9 @@ public class PetteiaGameController : MonoBehaviour
     public GameObject modalBlocker;
     public Animator pauseMenuAnim;
 
+    public TavernaMiniGameDialog playerDialog;
+    public TavernaEnemyDialog enemyDialog;
+
     void Awake()
     {
         menuButtons = GetComponent<MenuButtons>();
@@ -168,6 +171,10 @@ public class PetteiaGameController : MonoBehaviour
     public void SwitchTurn()
     {
         UpdateDebugText();
+
+        playerDialog.EnableHighlight(playerTurn);
+        enemyDialog.EnableHighlight(!playerTurn);
+
         if (playerTurn)
         {
             //Switching from player turn to enemy turn

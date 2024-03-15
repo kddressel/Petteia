@@ -71,6 +71,17 @@ public class TavernaMiniGameDialog : MonoBehaviour
         CloseDialog();
     }
 
+	public virtual void ShowBark(string text)
+	{
+		if (displayRoutine != null)
+		{
+			StopCoroutine(displayRoutine);
+		}
+
+		ShowText(text);
+		displayRoutine = StartCoroutine(AutoCloseDialog());
+	}
+
 	public virtual void ShowText(string text) {
 		anim.SetBool("SpeechBubbleActive", true);
 		dialog.text = text;

@@ -12,6 +12,7 @@ namespace Shiny.Solver
         {
             public UnityEngine.Vector2Int from;
             public UnityEngine.Vector2Int to;
+            public int numCaptured;
         }
 
         public class BoardStateNode : GameNode
@@ -50,15 +51,31 @@ namespace Shiny.Solver
 
             public BoardStateNode Start { get; set; }
 
-            virtual protected int EvaluateMove(MoveInfo move, BoardStateModel newBoard)
+            virtual protected int EvaluateMove(MoveInfo move, BoardStateModel newBoard, PlayerModel lastMoveBy)
             {
                 // PERF: comment out things not being used to save time evaluating the leaves
-                var pieceCountScore = (_startingPieces - newBoard.GetNumPiecesForPlayer(OpponentPlayer)) + newBoard.GetNumPiecesForPlayer(SelfPlayer as PlayerModel);
+                var piecesForOpponent = newBoard.GetNumPiecesForPlayer(OpponentPlayer);
+                var piecesForPlayer = newBoard.GetNumPiecesForPlayer(SelfPlayer as PlayerModel);
+
+                var pieceCountScore = piecesForPlayer - piecesForOpponent;
                 //var favorMiddleScore = newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Count(space => space.Pos.y > 2 && space.Pos.y < 6);
                 //var favorSidesScore = newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Count(space => space.Pos.x < 1 && space.Pos.x > 6);
-                var favorDestructionScore = (_startingPieces - newBoard.GetNumPiecesForPlayer(OpponentPlayer));
-                //var favorDefenseScore = newBoard.GetNumPiecesForPlayer(SelfPlayer as PlayerModel);
-                //var favorAdvancingScore = newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Average(space => space.Pos.y); // this advancement thing only works when AI is at the top
+                //var favorDestructionScore = lastMoveBy == SelfPlayer ? move.numCaptured : 0;
+                var favorDefenseScore = lastMoveBy == OpponentPlayer ? -move.numCaptured : 0;
+                //var favorAdvancingScore = (int)newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Average(space => space.y); // this advancement thing only works when AI is at the top
+
+                return pieceCountScore + favorDefenseScore;//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
+
+                // gets more aggressive in the late game, to avoid stalemates due to being too defensive
+                // willing to give up a piece if it means taking another
+                //if(piecesForOpponent > _startingPieces / 2)
+                //{
+                //    return pieceCountScore + favorDefenseScore;
+                //}
+                //else
+                //{
+                //    return pieceCountScore + favorDestructionScore;
+                //}
 
                 // favor sides and middle for the beginning of the game for some noticable fun, but then flip towards the end to playing really smart
                 //if(turn < 8)
@@ -86,7 +103,7 @@ namespace Shiny.Solver
                 // return pieceCountScore * 4 + favorMiddleScore * 1 + favorDestructionScore * 4;
 
                 // this is the one that plays most like a human so far. best on depth 2 and up
-                return pieceCountScore * 2 + favorDestructionScore * 4;
+                //return pieceCountScore * 2 + favorDestructionScore * 4;
             }
 
             public int GetScore(BoardStateNode node)
@@ -98,7 +115,7 @@ namespace Shiny.Solver
                     return IsMatchingMoveForManualTurn(node.BoardState, Turn, node.MoveInfo) ? 1 : 0;
                 }
 
-                return EvaluateMove(node.MoveInfo, node.BoardState);
+                return EvaluateMove(node.MoveInfo, node.BoardState, node.LastMoveBy);
             }
 
             public int GetCost(BoardStateNode from, BoardStateNode to)
@@ -129,14 +146,16 @@ namespace Shiny.Solver
                     var validMoves = validMovesRow.Concat(validMovesCol).Shuffle();
                     foreach (var move in validMoves)
                     {
+                        var numCaptures = 0;
                         var newBoard = node.BoardState.MovePiece(spaceWithPiece, move);
                         foreach (var pieceToRemove in Rules.GetSpacesToCaptureInMove(newBoard, currTurnPlayer, spaceWithPiece, move))
                         {
                             newBoard.RemovePieceInPlace(pieceToRemove);
+                            numCaptures++;
                         }
 
                         //UnityEngine.Debug.Log("possible next state - from: " + spaceWithPiece.Pos + " to " + move.Pos);
-                        yield return new BoardStateNode(node, newBoard, currTurnPlayer, node.LastMoveBy, new MoveInfo { from = spaceWithPiece, to = move });
+                        yield return new BoardStateNode(node, newBoard, currTurnPlayer, node.LastMoveBy, new MoveInfo { from = spaceWithPiece, to = move, numCaptured = numCaptures });
                     }
 
                     //UnityEngine.Debug.Log("Space with piece for player " + currTurnPlayer.Def.Name + " : " + spaceWithPiece.Pos);

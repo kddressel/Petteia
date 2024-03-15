@@ -8,6 +8,7 @@ using Assets.Petteia.Scripts.Model;
 using Shiny.Solver.Petteia;
 using Shiny.Solver;
 using System.Linq;
+using System.Threading.Tasks;
 
 public class PetteiaEnemyAI : MonoBehaviour
 {
@@ -77,9 +78,13 @@ public class PetteiaEnemyAI : MonoBehaviour
 			var startTime = Time.realtimeSinceStartup;
 			var solver = new MinimaxGameSolver(GetMaxDepthForDifficulty(GameManager.SelectedDifficulty));
 
+			var co = StartCoroutine(BarkWhileThinking());
+
 			await new WaitForBackgroundThread();
 			var solution = await solver.Solve(graph, graph.Start);
 			await new WaitForUpdate();
+
+			StopCoroutine(co);
 
 			var (score, move) = solution;
 			if (move == null)
@@ -93,8 +98,73 @@ public class PetteiaEnemyAI : MonoBehaviour
 				Debug.Log("Move Computed in " + (Time.realtimeSinceStartup - startTime) + " s. Picked option with score " + score);
 				_queuedMove = move.MoveInfo;
 				_moveCompleted = true;
+
+				Bark(score, move);
 			}
 		}
+	}
+
+	IEnumerator BarkWhileThinking()
+    {
+		yield return new WaitForSeconds(4);
+		if (_moveCompleted) yield break;
+		pController.enemyDialog.ShowBark("Thinking...");
+		yield return new WaitForSeconds(5);
+		if (_moveCompleted) yield break;
+		pController.enemyDialog.ShowBark("Still Thinking...");
+		yield return new WaitForSeconds(6);
+		if (_moveCompleted) yield break;
+		pController.enemyDialog.ShowBark("Still Thinking more...");
+		yield return new WaitForSeconds(7);
+		if (_moveCompleted) yield break;
+		pController.enemyDialog.ShowBark("It's gonna be a good move, promise...");
+	}
+	
+	void Bark(int score, BoardStateNode move)
+    {
+		if (move.MoveInfo.numCaptured > 0 && move.LastMoveBy == _graph.SelfPlayer)
+		{
+			// this isn't really right. in this case, it's when the enemy has to take a negative move because the only valid moves are all negative
+			//if (score < 0 && score > -2)
+			//{
+			//	pController.enemyDialog.ShowText("All part of the plan -1 through 0");
+			//}
+			//else if (score < 0 && score > -4)
+			//{
+			//	pController.enemyDialog.ShowText("I'll make a glorious comback soon -3 through -2");
+			//}
+			//else if (score < 0 && score > -6)
+			//{
+			//	pController.enemyDialog.ShowText("Ok now i'm really nervous -4 through -5");
+			//}
+			//else if (score < 0 && score > -8)
+			//{
+			//	pController.enemyDialog.ShowText("Don't look at me -6 through -7");
+			//}
+
+			if (score > 0 && score < 2)
+			{
+				pController.enemyDialog.ShowBark("Hah 1 through 0");
+			}
+			else if (score > 0 && score < 4)
+			{
+				pController.enemyDialog.ShowBark("You're doomed 3 through 2");
+			}
+			else if (score > 0 && score < 6)
+			{
+				pController.enemyDialog.ShowBark("Just quit now 4 through 5");
+			}
+			else if (score > 0 && score < 8)
+			{
+				pController.enemyDialog.ShowBark("Bye 6 through 7");
+			}
+		}
+
+		var capturesEnabled = _graph.GetReachable(move).Any(node => node.MoveInfo.numCaptured > 0);
+		if(capturesEnabled)
+        {
+			pController.enemyDialog.ShowBark("Oh man, just gave you a chance to capture");
+        }
 	}
 
 	// game world's piece positions are all (row, col), but the board model is (x, y) or (col, row)

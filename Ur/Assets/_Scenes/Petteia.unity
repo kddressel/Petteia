@@ -452,6 +452,8 @@ MonoBehaviour:
   debugPiecePositions: 
   modalBlocker: {fileID: 1447958406}
   pauseMenuAnim: {fileID: 1508829698}
+  playerDialog: {fileID: 1647562882}
+  enemyDialog: {fileID: 1093138878}
 --- !u!4 &4099228
 Transform:
   m_ObjectHideFlags: 0
@@ -5425,8 +5427,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 685686255}
-  m_LocalRotation: {x: 0.46484205, y: 0, z: 0, w: 0.8853937}
-  m_LocalPosition: {x: 25, y: 33.1, z: -60.1}
+  m_LocalRotation: {x: 0.46484205, y: 0, z: 0, w: 0.8853936}
+  m_LocalPosition: {x: 25, y: 35.61, z: -57.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13790,6 +13792,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3752256028613832034, guid: 17211484ec81f4049b72669128a2647f,
         type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -89.99988
+      objectReference: {fileID: 0}
+    - target: {fileID: 3752256028613832034, guid: 17211484ec81f4049b72669128a2647f,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 730.749
       objectReference: {fileID: 0}
@@ -13806,7 +13813,7 @@ PrefabInstance:
     - target: {fileID: 4183311495007647731, guid: 17211484ec81f4049b72669128a2647f,
         type: 3}
       propertyPath: displayTime
-      value: 8
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5196206650729836875, guid: 17211484ec81f4049b72669128a2647f,
         type: 3}
@@ -14016,6 +14023,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1093138876}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1093138878 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4183311495007647731, guid: 17211484ec81f4049b72669128a2647f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1093138876}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de057dfc13254ae47a6cfb040f919f69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1095568833 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1678744287, guid: fa27a1841ba3ca74d9015c76b29c0723,
@@ -19050,7 +19069,7 @@ MonoBehaviour:
   portrait: {fileID: 1647562879}
   anim: {fileID: 1647562878}
   highlight: {fileID: 1647562875}
-  displayTime: 8
+  displayTime: 2
   textBackground: {fileID: 1647562880}
   dialog: {fileID: 1647562877}
   dialogScroll: {fileID: 1647562876}
@@ -23373,7 +23392,7 @@ PrefabInstance:
     - target: {fileID: 5220106615039641139, guid: 7bddbb20614417b4d982059e874b4a90,
         type: 3}
       propertyPath: m_Name
-      value: UI Elements
+      value: UI Elements (old)
       objectReference: {fileID: 0}
     - target: {fileID: 5220106615039641139, guid: 7bddbb20614417b4d982059e874b4a90,
         type: 3}
