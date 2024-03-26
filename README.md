@@ -35,18 +35,3 @@ Pasting that version link into a browser will auto-launch the installer in [Unit
   * Type "upstream" as the remote name, and paste https://github.com/kddressel/Petteia.git in as the URL, change to your github account for remote account and click OK
   * Fetch -> And make sure you fetch all remotes (this is the default setting)
   * If needed, right click upstream/branchname and merge into your fork's branch
-
-## Git Setup for Windows
-
-* Install [Git for Windows](https://git-scm.com/download/win) using **default settings**
-  * Make sure you pick **"Git Credential Manager Core"**
-* Use https athentication steps below to clone your fork
-
-## Clone the project using https authentication
-
-```
-git clone yourforkurl 
-git remote add upstream https://github.com/kddressel/Petteia.git
-
-```
-
