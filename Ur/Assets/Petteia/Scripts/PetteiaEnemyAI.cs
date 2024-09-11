@@ -9,6 +9,7 @@ using Shiny.Solver.Petteia;
 using Shiny.Solver;
 using System.Linq;
 using System.Threading.Tasks;
+using DG.Tweening;
 
 public class PetteiaEnemyAI : MonoBehaviour
 {
@@ -288,9 +289,8 @@ public class PetteiaEnemyAI : MonoBehaviour
 			x += dist;
 		}
 
-		piece.transform.position = pController.BoardSquares[x, y].transform.position;
+		piece.transform.DOMove(pController.BoardSquares[x, y].transform.position, 0.5f);
 		yield return new WaitForSeconds(0.5f);
-
 
 		//pController.PlayMoveSound();
 		pController.positions[x, y] = 1;
