@@ -41,11 +41,10 @@ public class PetteiaPlayerPiece : MonoBehaviour
 		{
 			RaycastHit hit;
 			Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
-			if (Physics.Raycast(ray, out hit, 100f, mask, QueryTriggerInteraction.Collide)) 
+			if (Physics.Raycast(ray, out hit, 10000f, mask, QueryTriggerInteraction.Collide)) 
 			{
 				PetteiaBoardPosition pcm = hit.collider.GetComponent<PetteiaBoardPosition>();
-				if (validMoves.Contains(pcm)) 
+				if (validMoves.Contains(pcm))
 				{
 					potentialPos = pcm.position;
 					transform.position = hit.transform.position;

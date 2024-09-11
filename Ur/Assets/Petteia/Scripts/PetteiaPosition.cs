@@ -1,19 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PetteiaPosition : MonoBehaviour
 {
-	private Vector2Int PosToArray(float y, float x) 
-	{
-		//todo: don't link this to constant numbers so resizing the board doesn't break everything
-		return new Vector2Int(Mathf.RoundToInt((y + 3.25f) / -6.25f),  Mathf.RoundToInt((x - 3f) / 6.25f));
-		
-	}
-
 	public Vector2Int Pos {
 		get {
-			return PosToArray(transform.position.z, transform.position.x);
+			var mask = LayerMask.GetMask("GameSquare");
+			Physics.queriesHitTriggers = true;
+			var colliders = Physics.OverlapBox(transform.position, Vector3.one * 2, Quaternion.identity, mask);
+			Physics.queriesHitTriggers = false;
+			if (colliders.Length > 0)
+      {
+				var hitPiece = colliders.FirstOrDefault(c => c.GetComponent<PetteiaBoardPosition>() != null);
+				if(hitPiece != null)
+        {
+					var boardPos = hitPiece.GetComponent<PetteiaBoardPosition>();
+					return boardPos.position;
+        }
+      }
+
+			throw new System.Exception("Unknown board position for " + this);
 		}
 	}
 }
