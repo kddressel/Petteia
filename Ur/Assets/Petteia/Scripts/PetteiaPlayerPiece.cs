@@ -31,7 +31,10 @@ public class PetteiaPlayerPiece : MonoBehaviour
 		mask = LayerMask.GetMask("GameSquare");
 
 		potentialPos = pieceStartPos;
+		_goalPos = transform.position;
 	}
+
+	Vector3 _goalPos;
 
 	void FixedUpdate()
     {
@@ -47,10 +50,12 @@ public class PetteiaPlayerPiece : MonoBehaviour
 				if (validMoves.Contains(pcm))
 				{
 					potentialPos = pcm.position;
-					transform.position = hit.transform.position;
+					_goalPos = hit.transform.position;
 				}
 			}
 		}
+
+		transform.position = Vector3.Lerp(transform.position, _goalPos, 0.1f);
 	}
 
 	void OnMouseDown() 
