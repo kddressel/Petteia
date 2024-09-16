@@ -14,6 +14,11 @@ using UnityEditor;
 
 namespace Assets.Petteia.Scripts.Model
 {
+    public static class RulesFactory
+    {
+      public static RulesSet MakeRulesSet() => new KevinModifiedRulesSet();
+    }
+
     public class GameModelTester : MonoBehaviour
     {
         GameModel<RulesSet> gameModel;
@@ -31,7 +36,7 @@ namespace Assets.Petteia.Scripts.Model
                 new PlayerDef { Name = "Other (O)", AgentType = typeof(HumanPlayerAgent) }
             };
 
-            gameModel = new GameModel<RulesSet>(playerDefs, 8, 8);
+            gameModel = new GameModel<RulesSet>(playerDefs, 8, 8, RulesFactory.MakeRulesSet());
 
             for (var i = 0; i < 8; i++)
             {

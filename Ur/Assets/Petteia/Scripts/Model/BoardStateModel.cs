@@ -14,7 +14,7 @@ namespace Assets.Petteia.Scripts.Model
         public PlayerModel[] Players;
         public BoardStateModel Board;
 
-        public GameModel(PlayerDef[] players, int boardWidth, int boardHeight)
+        public GameModel(PlayerDef[] players, int boardWidth, int boardHeight, RulesSet rulesSet)
         {
             var playerModels = new List<PlayerModel>();
             foreach (var player in players)
@@ -29,7 +29,7 @@ namespace Assets.Petteia.Scripts.Model
             Players = playerModels.ToArray();
 
             Board = new BoardStateModel(boardWidth, boardHeight);
-            Rules = new RulesSet();
+            Rules = rulesSet;
         }
     }
 
@@ -64,6 +64,11 @@ namespace Assets.Petteia.Scripts.Model
     {
         public PlayerDef Def { get; internal set; }
         public IPlayerAgent Agent { get; internal set; }
+    }
+
+    public class KevinModifiedRulesSet : RulesSet
+    {
+      protected override bool IsValidDistance(int distance) => distance <= 2;
     }
 
     /// <summary>
@@ -107,13 +112,19 @@ namespace Assets.Petteia.Scripts.Model
             }
         }
 
+        virtual protected bool IsValidDistance(int distance)
+        {
+          return true;
+        }
+
         virtual public bool IsValidMove(BoardStateModel board, Vector2Int from, Vector2Int to)
         {
+            var distance = board.GetDistance(from, to);
             var isStraightLine = board.IsStraightLine(from, to);
             var isNotOccupied = board.IsSpaceEmpty(to);
             var isNotBlocked = board.IsWholeLineEmpty(from, to);
 
-            return isStraightLine && isNotOccupied && isNotBlocked;
+            return isStraightLine && isNotOccupied && isNotBlocked && IsValidDistance(distance);
         }
     }
 
@@ -293,6 +304,8 @@ namespace Assets.Petteia.Scripts.Model
                 yield return new Vector2Int(x, yRow);
             }
         }
+
+        public int GetDistance(Vector2Int from, Vector2Int to) => Mathf.Abs(to.y - from.y) + Mathf.Abs(to.x - from.x);
 
         public bool IsStraightLine(Vector2Int from, Vector2Int to) => IsVerticalStraightLine(from, to) ^ IsHorizontalStraightLine(from, to);
         public bool IsVerticalStraightLine(Vector2Int from, Vector2Int to) => from.x == to.x;
