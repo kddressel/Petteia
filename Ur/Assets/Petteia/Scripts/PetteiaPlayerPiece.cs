@@ -155,7 +155,7 @@ public class PetteiaPlayerPiece : MonoBehaviour
                 new PlayerDef { Name = "Other (O)", AgentType = typeof(HumanPlayerAgent) }
     };
 
-    var gameModel = new GameModel<RulesSet>(playerDefs, 8, 8, RulesFactory.MakeRulesSet());
+    var gameModel = new GameModel<RulesSet>(playerDefs, 8, 8, RulesFactory.MakeRulesSet(pController.Lastroll));
     for (int y = 0; y < 8; y++)
     {
       for (int x = 0; x < 8; x++)

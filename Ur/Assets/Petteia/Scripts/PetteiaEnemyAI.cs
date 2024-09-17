@@ -186,7 +186,7 @@ public class PetteiaEnemyAI : MonoBehaviour
 				new PlayerDef { Name = "Other (O)", AgentType = typeof(HumanPlayerAgent) }
 		};
 
-		var gameModel = new GameModel<RulesSet>(playerDefs, 8, 8, RulesFactory.MakeRulesSet());
+		var gameModel = new GameModel<RulesSet>(playerDefs, 8, 8, RulesFactory.MakeRulesSet(pController.Lastroll));
 
 		foreach (var enemyPiece in pieces)
 		{
