@@ -66,8 +66,8 @@ namespace Shiny.Solver
         var favorDefenseScore = lastMoveBy == OpponentPlayer ? -move.numCaptured : 0;
         //var favorAdvancingScore = (int)newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Average(space => space.y); // this advancement thing only works when AI is at the top
 
-        return (pieceCountScore + favorDefenseScore);//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
-        //return (int)Math.Round((pieceCountScore + favorDefenseScore) * move.precompmutedWeight);//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
+        //return (pieceCountScore + favorDefenseScore);//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
+        return (int)Math.Round((pieceCountScore + favorDefenseScore) * 10 * move.precompmutedWeight);//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
 
         // gets more aggressive in the late game, to avoid stalemates due to being too defensive
         // willing to give up a piece if it means taking another

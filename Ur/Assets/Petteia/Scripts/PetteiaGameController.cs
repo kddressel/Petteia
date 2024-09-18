@@ -57,6 +57,8 @@ public class PetteiaGameController : MonoBehaviour
   public GameObject modalBlocker;
   public Animator pauseMenuAnim;
 
+  [SerializeField] TextMeshProUGUI _rollUI;
+
   public TavernaMiniGameDialog playerDialog;
   public TavernaEnemyDialog enemyDialog;
 
@@ -93,6 +95,7 @@ public class PetteiaGameController : MonoBehaviour
 
     enemyAI = GetComponent<PetteiaEnemyAI>();
     playerTurn = true;
+    Roll();
 
     //Turns the various rows of board squares into one 2D array
     //Since public 2D arrays don't show in the inspector, we have to do it this way
@@ -168,6 +171,13 @@ public class PetteiaGameController : MonoBehaviour
     GameManager.LoadGamePlay();
   }
 
+  void Roll()
+  {
+    Lastroll = ThreadsafeUtils.Random.Next(1, RulesFactory.MaxRoll);
+    _rollUI.text = Lastroll.ToString();
+    Debug.Log("rolled a " + Lastroll);
+  }
+
   /// <summary>
   /// Checks for captures and game over, and switches the control between the player/AI
   /// </summary>
@@ -178,8 +188,7 @@ public class PetteiaGameController : MonoBehaviour
     playerDialog.EnableHighlight(playerTurn);
     enemyDialog.EnableHighlight(!playerTurn);
 
-    Lastroll = ThreadsafeUtils.Random.Next(1, RulesFactory.MaxRoll);
-    Debug.Log("rolled a " + Lastroll);
+    Roll();
 
     if (playerTurn)
     {

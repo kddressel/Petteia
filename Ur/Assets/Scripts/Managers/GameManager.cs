@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 	private static Scene persistantScene;
     private static GameManager instance;
 
-  public static AIDifficulty SelectedDifficulty { get; set; } = AIDifficulty.Medium;    // default to medium when playing outside of menu flow
+  public static AIDifficulty SelectedDifficulty { get; set; } = AIDifficulty.Hard;    // default to medium when playing outside of menu flow
 
 	public static List<CrewMember> MasterCrewList { get; set; }
 	public static PlayableCharacter SelectedCharacter { get; set; }
