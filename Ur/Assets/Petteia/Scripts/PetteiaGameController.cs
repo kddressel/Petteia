@@ -8,9 +8,12 @@ using UnityEngine.SceneManagement;
 using MiniGameFramework;
 using Assets.Petteia.Scripts.Model;
 using Shiny.Threads;
+using System;
 
 public class PetteiaGameController : MonoBehaviour
 {
+    public static LevelDef LevelDef;
+
     [Header("Petteia Variables")]
     public Vector2Int rewardAmts;
 
@@ -62,6 +65,8 @@ public class PetteiaGameController : MonoBehaviour
     public TavernaMiniGameDialog playerDialog;
     public TavernaEnemyDialog enemyDialog;
 
+    long StartTime;
+
     void Awake()
     {
         menuButtons = GetComponent<MenuButtons>();
@@ -69,6 +74,8 @@ public class PetteiaGameController : MonoBehaviour
 
     void Start()
     {
+        StartTime = DateTimeUtils.GetNowInUnixUTCSeconds();
+
         // TODO: Bring back flavor
         //if (Globals.Database != null) 
         //{
@@ -151,7 +158,7 @@ public class PetteiaGameController : MonoBehaviour
                 GameManager.PlayMenuClosed();
             }
             pauseMenuAnim.SetTrigger("PauseMenuisActive");
-            modalBlocker.SetActive(gamePaused);
+            //modalBlocker.SetActive(gamePaused);
             if (!settingsInitialized)
             {
                 settingsInitialized = true;
@@ -359,7 +366,7 @@ public class PetteiaGameController : MonoBehaviour
         yield return null;
 
         //Player win
-        if (enemyAI.pieces.Count <= 1)
+        if (enemyAI.pieces.Count <= 1 || Input.GetKey(KeyCode.W))
         {
             WinGame();
         }
@@ -390,7 +397,22 @@ public class PetteiaGameController : MonoBehaviour
         //}
 
         Debug.Log("Victory!");
-        GameManager.LoadMainMenu();
+
+        GameManager.Instance.PlayerRecord.Rounds.Add(new RoundRecord
+        {
+            Cleared = true,
+            Draw = false,
+            Duration = DateTimeUtils.GetNowInUnixUTCSeconds() - StartTime,
+            EndTime = DateTimeUtils.GetNowInUnixUTCSeconds(),
+            LevelId = LevelDef.Id,
+            NumPiecesLeft = playerPieces.Count,
+        });
+
+        GameManager.Instance.PlayerRecord.CurrentLevel = LevelDef.Id;
+        GameManager.Instance.PlayerRecord.Modified = DateTimeUtils.GetNowInUnixUTCSeconds();
+        GameManager.Instance?.Save();
+        CameraSlider.StartPosition = CameraSlider.Position.Game;
+        GameManager.LoadMainMenu(MenuScreen.ScreenType.LevelSelect);
 
         //mgScreen.DisplayText("Petteia: Victory!", "Taverna Game", text, gameIcon, MiniGameInfoScreen.MiniGame.TavernaEnd);
 
@@ -401,7 +423,19 @@ public class PetteiaGameController : MonoBehaviour
         gameOver = true;
 
         Debug.Log("Lose Game!");
-        GameManager.LoadMainMenu();
+
+        GameManager.Instance.PlayerRecord.Rounds.Add(new RoundRecord
+        {
+            Cleared = false,
+            Draw = false,
+            Duration = DateTimeUtils.GetNowInUnixUTCSeconds() - StartTime,
+            EndTime = DateTimeUtils.GetNowInUnixUTCSeconds(),
+            LevelId = LevelDef.Id,
+            NumPiecesLeft = playerPieces.Count,
+        });
+        GameManager.Instance?.Save();
+        CameraSlider.StartPosition = CameraSlider.Position.Game;
+        GameManager.LoadMainMenu(MenuScreen.ScreenType.LevelSelect);
 
         //mgScreen.gameObject.SetActive(true);
         //string text = loseText + "\n\n" + "Although you have lost this round, you can always find a willing opponent to try again!" + "\n\n" + loseFlavor.RandomElement();

@@ -88,6 +88,8 @@ public class GameManager : MonoBehaviour
             SaveData.Players.Add(new PlayerRecord());
         }
         PlayerRecord = SaveData.Players.First();
+        Debug.Log("player record: " + PlayerRecord);
+        Save();
     }
 
     public static void PlaySFX(AudioClip clip)
@@ -152,7 +154,27 @@ public class GameManager : MonoBehaviour
     //I'm not even sure if you can start a coroutine through a button without another encapsulating normal method, I don't think you can
     public static void LoadMainMenu()
     {
-        instance.StartCoroutine(instance.LoadScene(1));
+        LoadMainMenu(MenuScreen.ScreenType.Title);
+    }
+
+    public static void LoadMainMenu(MenuScreen.ScreenType startScreen)
+    {
+        instance.StartCoroutine(LoadMenuCoroutine(startScreen));
+    }
+
+    static IEnumerator LoadMenuCoroutine(MenuScreen.ScreenType startScreen)
+    {
+        yield return instance.LoadScene(1);
+        GameObject.FindObjectOfType<TitleScreenButtons>().EnableMenuScreen(startScreen, true);
+        yield return new WaitForSeconds(1);
+        if (startScreen == MenuScreen.ScreenType.Title && CameraSlider.StartPosition != CameraSlider.Position.Title)
+        {
+            GameObject.FindObjectOfType<CameraSlider>().SlideToTitlePos();
+        }
+        else if (startScreen != MenuScreen.ScreenType.Title && CameraSlider.StartPosition != CameraSlider.Position.Menu)
+        {
+            GameObject.FindObjectOfType<CameraSlider>().SlideToMenuPos();
+        }
     }
 
     public static void LoadLevel(LevelDef def)
@@ -164,6 +186,8 @@ public class GameManager : MonoBehaviour
         RulesFactory.UsePlacePieces = (def.RuleSet & LevelDef.Rules.PlacePieces) != 0;
 
         CameraSlider.StartPosition = CameraSlider.Position.Menu;
+
+        PetteiaGameController.LevelDef = def;
 
         LoadGamePlay();
     }
