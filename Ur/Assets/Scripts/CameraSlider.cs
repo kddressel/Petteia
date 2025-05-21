@@ -6,6 +6,15 @@ public class CameraSlider : MonoBehaviour
 {
     const float _speed = 2f;
 
+    public static Position StartPosition = Position.Title;
+
+    public enum Position
+    {
+        Title,
+        Menu,
+        Game
+    }
+
     [SerializeField] Transform _gamePos;
     [SerializeField] Transform _titlePos;
     [SerializeField] Transform _menuPos;
@@ -15,7 +24,7 @@ public class CameraSlider : MonoBehaviour
 
     void Start()
     {
-        InstantJumpTo(_titlePos);
+        InstantJumpTo(StartPosition);
     }
 
     void Update()
@@ -62,5 +71,21 @@ public class CameraSlider : MonoBehaviour
         _goalRot = goal.rotation;
         transform.position = goal.position;
         transform.rotation = goal.rotation;
+    }
+
+    public void InstantJumpTo(Position pos)
+    {
+        switch (pos)
+        {
+            case Position.Title:
+                InstantJumpTo(_titlePos);
+                break;
+            case Position.Menu:
+                InstantJumpTo(_menuPos);
+                break;
+            case Position.Game:
+                InstantJumpTo(_gamePos);
+                break;
+        }
     }
 }

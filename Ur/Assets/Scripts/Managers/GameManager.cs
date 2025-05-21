@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using Assets.Petteia.Scripts.Model;
 
 public enum AIDifficulty { VeryEasy, Easy, Medium, Hard, VeryHard, None }
 
@@ -154,10 +155,30 @@ public class GameManager : MonoBehaviour
         instance.StartCoroutine(instance.LoadScene(1));
     }
 
+    public static void LoadLevel(LevelDef def)
+    {
+        GameManager.SelectedDifficulty = def.Difficulty;
+        
+        RulesFactory.UseDiceRoll = (def.RuleSet & LevelDef.Rules.Dice) != 0;
+        RulesFactory.UseKing = (def.RuleSet & LevelDef.Rules.King) != 0;
+        RulesFactory.UsePlacePieces = (def.RuleSet & LevelDef.Rules.PlacePieces) != 0;
+
+        CameraSlider.StartPosition = CameraSlider.Position.Menu;
+
+        LoadGamePlay();
+    }
+
     public static void LoadGamePlay()
     {
         var gameToLoad = Input.GetKey(KeyCode.U) ? 3 : 2;       // hold U to load Ur, default loads petteia
-        instance.StartCoroutine(instance.LoadScene(gameToLoad));
+        instance.StartCoroutine(LoadLevelCoroutine(gameToLoad));
+    }
+
+    static IEnumerator LoadLevelCoroutine(int sceneIndex)
+    {
+        yield return instance.LoadScene(sceneIndex);
+        yield return new WaitForSeconds(1);
+        GameObject.FindObjectOfType<CameraSlider>().SlideToGamePos();
     }
 
     private IEnumerator LoadScene(int index)
@@ -187,9 +208,9 @@ public class GameManager : MonoBehaviour
             //Going to add a bit of artificial load time in here so you can see the "loading" screen instead of it just flashing for an instant
             //We want to minimize flashing images, obviously, and this way it's also easier to tell that it's a loading screen
             //This will probably be replaced by something nicer looking later when I learn how to do that
-            instance.SetLoadingText("Loading...");
-            yield return new WaitForSeconds(0.25f);
-            instance.SetLoadingText("");
+            //instance.SetLoadingText("Loading...");
+            //yield return new WaitForSeconds(0.25f);
+            //instance.SetLoadingText("");
 
             yield return SceneManager.LoadSceneAsync(index, LoadSceneMode.Additive);
 
