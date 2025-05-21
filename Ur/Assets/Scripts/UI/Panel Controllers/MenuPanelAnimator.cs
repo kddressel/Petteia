@@ -16,21 +16,37 @@ public class MenuPanelAnimator : MonoBehaviour
 		}
 	}
 
-	public void EnableAnimation(bool enable) {
-		if (enable) {
-			StartCoroutine(ResetScroll());
-		}
-		anim.SetBool("MenuActive", enable);
+	public void EnableAnimation(bool enable)
+    {
+        gameObject.SetActive(true);
+        if (anim != null)
+		{
+            if (enable)
+            {
+                StartCoroutine(ResetScroll());
+            }
+            anim.SetBool("MenuActive", enable);
+        }
 	}
 
 	public void CloseMenu() {
-		StartCoroutine(DoCloseMenu());
-	}
+		if(gameObject != null && gameObject.activeInHierarchy)
+		{
+            StartCoroutine(DoCloseMenu());
+        }
+    }
 
 	public IEnumerator DoCloseMenu() {
-		anim.SetBool("MenuActive", false);
-		yield return new WaitForSecondsRealtime(toOffAnimTime);
-		gameObject.SetActive(false);
+		if(anim == null)
+        {
+            gameObject.SetActive(false);
+        }
+		else
+        {
+            anim.SetBool("MenuActive", false);
+            yield return new WaitForSecondsRealtime(toOffAnimTime);
+            gameObject.SetActive(false);
+        }
 	}
 
 	private IEnumerator ResetScroll() {

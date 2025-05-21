@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 [Serializable]
 public class MenuScreen
 {
-    public enum ScreenType { CharacterSelector, Settings, History, Credits, Stats }
+    public enum ScreenType { CharacterSelector, Settings, History, Credits, Stats, LevelSelect, FileSelect, Title }
 
     public ScreenType type;
 	public MenuPanelAnimator menuBox;

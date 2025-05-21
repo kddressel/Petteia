@@ -19,9 +19,14 @@ public class TitleScreenButtons : MenuButtons
 		PlayerSelection -= EnableGameStart;
 	}
 
-	public void EnableCharacterSelecction(bool enabled) {
-		EnableMenuScreen(MenuScreen.ScreenType.CharacterSelector, enabled);
-	}
+	public void EnableLevelSelect(bool enabled) {
+		HideAllBut(MenuScreen.ScreenType.LevelSelect);
+		GameObject.FindObjectOfType<CameraSlider>().SlideToMenuPos();
+
+        // TODO: enable the file select screen. for now we're going straight to level seslect
+        EnableMenuScreen(MenuScreen.ScreenType.LevelSelect, enabled);
+        //EnableMenuScreen(MenuScreen.ScreenType.CharacterSelector, enabled);
+    }
 
 	public void EnableSettings(bool enabled) {
 		EnableMenuScreen(MenuScreen.ScreenType.Settings, enabled);
@@ -42,8 +47,20 @@ public class TitleScreenButtons : MenuButtons
 		EnableMenuScreen(MenuScreen.ScreenType.Stats, enabled);
 	}
 
-	private void EnableMenuScreen(MenuScreen.ScreenType type, bool activate) {
-		extraScreens.FirstOrDefault(x => x.type == type).menuBox.EnableAnimation(activate);
+	public void HideAllBut(MenuScreen.ScreenType type)
+    {
+        // hide others
+        foreach (var x in extraScreens)
+        {
+            if (x.type != type)
+            {
+                x.menuBox.CloseMenu();
+            }
+        }
+    }
+
+    private void EnableMenuScreen(MenuScreen.ScreenType type, bool activate) {
+        extraScreens.FirstOrDefault(x => x.type == type).menuBox.EnableAnimation(activate);
 		modalBlocker.SetActive(activate);
 	}
 

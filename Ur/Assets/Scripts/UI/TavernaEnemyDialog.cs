@@ -14,7 +14,7 @@ public class TavernaEnemyDialog : TavernaMiniGameDialog
     protected override void SetDisplayInformation()
     {
         if (crew == null) {
-            crew = GameManager.MasterCrewList.RandomElement();
+            crew = GameManager.MasterCrewList?.RandomElement();
         }
 
         // TODO: Hook to kylie's better dialog system
