@@ -10608,6 +10608,39 @@ PrefabInstance:
       propertyPath: nextNodes.Array.data[0]
       value: 
       objectReference: {fileID: 720791766}
+    - target: {fileID: 3947202342161307248, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Canthus</b>
+
+        Hard'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4592754609899241917, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7c7cfc21085eafb4685ce81d3f4dcc11,
+        type: 3}
+    - target: {fileID: 4592846170276447247, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Orpheus</b>
+
+        Medium'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4873343471332724865, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: eaf65ce480d1d2d4094b2703168d305e,
+        type: 3}
+    - target: {fileID: 5393731767771973452, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Hylas</b>
+
+        Easy'
+      objectReference: {fileID: 0}
     - target: {fileID: 6499194052604788528, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_Pivot.x
@@ -13169,6 +13202,45 @@ PrefabInstance:
       propertyPath: nextNodes.Array.data[0]
       value: 
       objectReference: {fileID: 877977933}
+    - target: {fileID: 3947100663386674114, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c9c81e0129b46bc46a13963fccd24739,
+        type: 3}
+    - target: {fileID: 3947202342161307248, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Theokles son of Nymphodoros</b>
+
+        Very Hard'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4592754609899241917, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1c9b1146ce0df2b458495792a536572b,
+        type: 3}
+    - target: {fileID: 4592846170276447247, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Palaemonius</b>
+
+        Hard'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4873343471332724865, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 145ce424906dc574891b7ccf8fe23887,
+        type: 3}
+    - target: {fileID: 5393731767771973452, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Eurybotas</b>
+
+        Medium'
+      objectReference: {fileID: 0}
     - target: {fileID: 6499194052604788528, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_Pivot.x
@@ -24160,6 +24232,45 @@ PrefabInstance:
       propertyPath: nextNodes.Array.data[0]
       value: 
       objectReference: {fileID: 1439796301}
+    - target: {fileID: 3947100663386674114, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 68337736052c41e4cbdd269d27635041,
+        type: 3}
+    - target: {fileID: 3947202342161307248, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Erginus</b>
+
+        Very Hard'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4592754609899241917, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ca71b40caafc39048a3a9d9360d829b1,
+        type: 3}
+    - target: {fileID: 4592846170276447247, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Idas</b>
+
+        Hard'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4873343471332724865, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7de5a96b64077064caa1a2d21879b973,
+        type: 3}
+    - target: {fileID: 5393731767771973452, guid: 752ea20d44e48f746b19d0981597bf22,
+        type: 3}
+      propertyPath: m_text
+      value: '<b>Periclymenus</b>
+
+        Medium'
+      objectReference: {fileID: 0}
     - target: {fileID: 6499194052604788528, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_Pivot.x
