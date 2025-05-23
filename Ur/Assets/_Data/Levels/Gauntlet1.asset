@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 3
   RuleSet: 0
+  CrewId: 27

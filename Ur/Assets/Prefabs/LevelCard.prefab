@@ -397,6 +397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LevelDef: {fileID: 0}
+  CrewPortrait: {fileID: 6405628561030785236}
+  CrewName: {fileID: 5881322172103687961}
   nodeRoot: {fileID: 4621792482951274980}
   lockedOverlay: {fileID: 4326358885161384848}
   currentOverlay: {fileID: 2650177312234635126}

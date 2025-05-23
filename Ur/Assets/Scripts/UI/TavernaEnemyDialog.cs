@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using MiniGameFramework;
+using System.Linq;
 
 public class TavernaEnemyDialog : TavernaMiniGameDialog
 {
@@ -14,16 +15,16 @@ public class TavernaEnemyDialog : TavernaMiniGameDialog
     protected override void SetDisplayInformation()
     {
         if (crew == null) {
-            crew = GameManager.MasterCrewList?.RandomElement();
+            crew = GameManager.MasterCrewList.FirstOrDefault(crew => crew.Id == PetteiaGameController.LevelDef.CrewId);
         }
 
         // TODO: Hook to kylie's better dialog system
-        //nameText.text = crew.CrewName;
-        //portrait.sprite = crew.CrewPortrait;
+        nameText.text = crew.CrewName;
+        portrait.sprite = crew.CrewPortrait;
 
-        //if (portrait.sprite == null) {
-        //    portrait.sprite = Resources.Load<Sprite>(DefaultPortrait);
-        //}
+        if (portrait.sprite == null) {
+            portrait.sprite = Resources.Load<Sprite>(DefaultPortrait);
+        }
     }
 
 	public override void ShowCharacterInfo() {

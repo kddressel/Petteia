@@ -8,12 +8,14 @@ public class CrewMember
     private string homeTown;
     private string crewDescription;
     private Sprite crewPortrait;
+    private int crewId;
 
     public CrewMember(string name, int id, string home, string descrip)
     {
         crewName = name;
         homeTown = home;
         crewDescription = descrip;
+        crewId = id;
         crewPortrait = Resources.Load<Sprite>("crew_portraits/" + id);
     }
 
@@ -29,4 +31,5 @@ public class CrewMember
     public string CrewDescription { get { return crewDescription; } }
 
     public Sprite CrewPortrait { get { return crewPortrait; } }
+    public int Id => crewId;
 }

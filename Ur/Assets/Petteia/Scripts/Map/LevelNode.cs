@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +11,9 @@ public class LevelNode : MonoBehaviour
 {
     public LevelDef LevelDef;
     public string Id => LevelDef.Id;
+
+    public Image CrewPortrait;
+    public TextMeshProUGUI CrewName;
 
     public GameObject nodeRoot;
     public GameObject lockedOverlay;
@@ -53,5 +58,10 @@ public class LevelNode : MonoBehaviour
         if (lockedOverlay) lockedOverlay.SetActive(state == LevelState.Locked);
         if (currentOverlay) currentOverlay.SetActive(state == LevelState.Current);
         if (completedOverlay) completedOverlay.SetActive(state == LevelState.Completed);
+
+        var crew = GameManager.MasterCrewList.FirstOrDefault(crew => crew.Id == LevelDef.CrewId);
+        if(crew == null) Debug.LogError("Missing crew " + LevelDef.CrewId);
+        CrewName.text = crew.CrewName + "\n" + LevelDef.Difficulty;
+        CrewPortrait.sprite = crew.CrewPortrait;
     }
 }

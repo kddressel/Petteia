@@ -15165,7 +15165,7 @@ PrefabInstance:
     - target: {fileID: 1200154053686007998, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_text
-      value: King Rules
+      value: Challenge
       objectReference: {fileID: 0}
     - target: {fileID: 1673083997828514834, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
@@ -15197,33 +15197,35 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 68337736052c41e4cbdd269d27635041,
+      objectReference: {fileID: 21300000, guid: aed6fbd8f2927f34fa37854f6b9fb667,
         type: 3}
     - target: {fileID: 3947202342161307248, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_text
-      value: '<b>Erginus</b>
+      value: '<b>Kourete</b>
 
-        Very Hard'
+        Impossible
+
+        King'
       objectReference: {fileID: 0}
     - target: {fileID: 4592754609899241917, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: ca71b40caafc39048a3a9d9360d829b1,
+      objectReference: {fileID: 21300000, guid: 5716ffa383d5e9448a33e09c365f6338,
         type: 3}
     - target: {fileID: 4592846170276447247, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_text
-      value: '<b>Idas</b>
+      value: '<b>Menes</b>
 
-        Hard'
+        Impossible'
       objectReference: {fileID: 0}
     - target: {fileID: 4873343471332724865, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 7de5a96b64077064caa1a2d21879b973,
+      objectReference: {fileID: 21300000, guid: 6fb587a07c8448745a130a41a9174a74,
         type: 3}
     - target: {fileID: 5097554698283122652, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
@@ -15233,9 +15235,9 @@ PrefabInstance:
     - target: {fileID: 5393731767771973452, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
       propertyPath: m_text
-      value: '<b>Periclymenus</b>
+      value: '<b>Telamon</b>
 
-        Medium'
+        Very Hard'
       objectReference: {fileID: 0}
     - target: {fileID: 5747842317977644451, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
@@ -25548,7 +25550,7 @@ PrefabInstance:
         type: 3}
       propertyPath: LevelDef
       value: 
-      objectReference: {fileID: 11400000, guid: 762b82d36d7ddbe4db8e62e885f11e90,
+      objectReference: {fileID: 11400000, guid: d868b6cef310f2a459fc5722ae49a8a1,
         type: 2}
     - target: {fileID: 7722222979528070446, guid: 752ea20d44e48f746b19d0981597bf22,
         type: 3}
@@ -33263,15 +33265,17 @@ PrefabInstance:
     - target: {fileID: 5881322172103687961, guid: 4479b11bf59768a4092e98c56c72710b,
         type: 3}
       propertyPath: m_text
-      value: '<b>Erginus</b>
+      value: '<b>Eurydamas</b>
 
-        Very Hard'
+        Impossible
+
+        Dice'
       objectReference: {fileID: 0}
     - target: {fileID: 6405628561030785236, guid: 4479b11bf59768a4092e98c56c72710b,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: ca71b40caafc39048a3a9d9360d829b1,
+      objectReference: {fileID: 21300000, guid: 63cb3525a9c185241b3059cb1d93bb14,
         type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
