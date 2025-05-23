@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using Assets.Petteia.Scripts.Model;
+using System.Runtime.InteropServices;
 
 public enum AIDifficulty { VeryEasy, Easy, Medium, Hard, VeryHard, None }
 
@@ -17,6 +18,7 @@ public class GameManager : MonoBehaviour
     public AudioSource bgmSource;
     public AudioSource sfxSource;
     public bool goToMainMenu = false;
+    public bool loadLightingScene = false;
 
     [Header("Region")]
     public AudioClip buttonHoverSound;
@@ -26,6 +28,7 @@ public class GameManager : MonoBehaviour
     public AudioClip gameStartSound;
 
     private static Scene persistantScene;
+    private static Scene persistentLightingScene;
     private static GameManager instance;
     public static GameManager Instance => instance;
 
@@ -63,14 +66,20 @@ public class GameManager : MonoBehaviour
             MasterCrewList = CSVLoader.LoadMasterCrewRoster();
             CSVLoader.LoadUrText();
             persistantScene = SceneManager.GetSceneByBuildIndex(0);
+
             AudioSettings.OnAudioConfigurationChanged += deviceWasChanged =>
             {
                 Debug.LogWarning($"Audio device change detected: {deviceWasChanged}");
                 bgmSource.Pause();
                 bgmSource.UnPause();
             };
+            if (loadLightingScene)
+            {
+                StartCoroutine(LoadScene(1));
+            }
             if (goToMainMenu)
             {
+                Debug.Log("go to main menu");
                 LoadMainMenu();
             }
         }
@@ -164,7 +173,7 @@ public class GameManager : MonoBehaviour
 
     static IEnumerator LoadMenuCoroutine(MenuScreen.ScreenType startScreen)
     {
-        yield return instance.LoadScene(1);
+        yield return instance.LoadScene(2);
         GameObject.FindObjectOfType<TitleScreenButtons>().EnableMenuScreen(startScreen, true);
         yield return new WaitForSeconds(1);
         if (startScreen == MenuScreen.ScreenType.Title && CameraSlider.StartPosition != CameraSlider.Position.Title)
@@ -194,7 +203,7 @@ public class GameManager : MonoBehaviour
 
     public static void LoadGamePlay()
     {
-        var gameToLoad = Input.GetKey(KeyCode.U) ? 3 : 2;       // hold U to load Ur, default loads petteia
+        var gameToLoad = Input.GetKey(KeyCode.U) ? 3 : 4;       // hold U to load Ur, default loads petteia
         instance.StartCoroutine(LoadLevelCoroutine(gameToLoad));
     }
 
@@ -205,8 +214,50 @@ public class GameManager : MonoBehaviour
         GameObject.FindObjectOfType<CameraSlider>().SlideToGamePos();
     }
 
+    int _targetBuildIndex;
+
+    void OnEnable()
+    {
+        Application.onBeforeRender += DoSwap;
+    }
+
+    void OnDisable()
+    {
+        Application.onBeforeRender -= DoSwap;
+    }
+    Scene _nextScene;
+
+    void DoSwap()
+    {
+        // wait until the OnBeforeRender that happens right after the scene is loaded, OnBeforeRender allows us to activate as soon as possible
+        if (!_nextScene.isLoaded) return;
+
+        // This runs just before the frame draw
+        SceneManager.SetActiveScene(_nextScene);
+        DynamicGI.UpdateEnvironment();
+        LightProbes.Tetrahedralize();
+    }
+
+    Scene[] GetLoadedAdditiveScenes()
+    {
+        var sceneCount = SceneManager.sceneCount;
+        List<Scene> loadedAdditiveScenes = new List<Scene>();
+        for(var i = 0; i < sceneCount; i++)
+        {
+            var scene = SceneManager.GetSceneAt(i);
+            if (scene.isLoaded && scene.name != persistantScene.name && scene.name != persistentLightingScene.name)
+            {
+                Debug.Log("adding scene " +  scene.name + " with " + persistantScene.name + " and " + persistentLightingScene.name);
+                loadedAdditiveScenes.Add(scene);
+            }
+        }
+        return loadedAdditiveScenes.ToArray();
+    }
+
     private IEnumerator LoadScene(int index)
     {
+        _targetBuildIndex = index;
+
         //If you're loading a scene from the pause menu, timeScale is 0, so we need to reset it
         //Most of this will still work, but not the artificially inflated loading
         Time.timeScale = 1;
@@ -215,36 +266,38 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Scene at index {index} is null");
         }
 
-        if (SceneManager.GetActiveScene().Equals(persistantScene))
+        if(index == 1)
         {
+            Debug.Log("Loading lighting scene");
             yield return SceneManager.LoadSceneAsync(index, LoadSceneMode.Additive);
-            Scene nextScene = SceneManager.GetSceneByBuildIndex(index);
-            SceneManager.SetActiveScene(nextScene);
+            persistentLightingScene = SceneManager.GetSceneByBuildIndex(index);
+            SceneManager.SetActiveScene(persistentLightingScene);
         }
         else
         {
-            Scene currentScene = SceneManager.GetActiveScene();
+            foreach(var scene in GetLoadedAdditiveScenes())
+            {
+                Debug.Log("Unloading " + scene.name);
+                yield return SceneManager.UnloadSceneAsync(scene);
+            }
 
-            SceneManager.SetActiveScene(persistantScene);
-
-            yield return SceneManager.UnloadSceneAsync(currentScene);
-
-            //Going to add a bit of artificial load time in here so you can see the "loading" screen instead of it just flashing for an instant
-            //We want to minimize flashing images, obviously, and this way it's also easier to tell that it's a loading screen
-            //This will probably be replaced by something nicer looking later when I learn how to do that
-            //instance.SetLoadingText("Loading...");
-            //yield return new WaitForSeconds(0.25f);
-            //instance.SetLoadingText("");
+            //SceneManager.SetActiveScene(persistentLightingScene);
 
             yield return SceneManager.LoadSceneAsync(index, LoadSceneMode.Additive);
+            //op.allowSceneActivation = false;
 
+            // wait until Unity has finished loading scene data
+            //while (op.progress < 0.9f)
+            //    yield return null;
 
-            //This needs to be down here, at the end, instead of up where we set currentScene
-            //I'll be honest - I'm not entirely sure why, but the game crashes otherwise
-            //It's got to have something to do with the order scenes are loaded in, but I'm not sure
-            Scene nextScene = SceneManager.GetSceneByBuildIndex(index);
+            // grab the handle
 
-            SceneManager.SetActiveScene(nextScene);
+            // signal DoSwap() to run at onBeforeRender
+            //_readyToSwap = true;
+
+            // now let Unity finish the activation step
+            //op.allowSceneActivation = true;
+            //yield return op;
         }
     }
 

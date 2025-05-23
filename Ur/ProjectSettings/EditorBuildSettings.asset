@@ -9,12 +9,15 @@ EditorBuildSettings:
     path: Assets/_Scenes/PersistantScene.unity
     guid: 3876bfd38b5389949823caa465b52eed
   - enabled: 1
-    path: Assets/_Scenes/MainMenu.unity
-    guid: 9e48a7ae756f7d64098ee6244019dcaa
-  - enabled: 1
     path: Assets/_ExportedArt/OutdoorsScene.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
   - enabled: 1
+    path: Assets/_Scenes/MainMenu.unity
+    guid: 9e48a7ae756f7d64098ee6244019dcaa
+  - enabled: 1
     path: Assets/_Scenes/Ur.unity
     guid: b1f7a182d776bff43a39c9a080789957
+  - enabled: 1
+    path: Assets/_Scenes/Gameplay.unity
+    guid: b0c843d6c810be742a154da25492a409
   m_configObjects: {}

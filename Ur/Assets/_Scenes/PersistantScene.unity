@@ -155,10 +155,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1349319677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.2, y: 0.4}
-  m_AnchorMax: {x: 0.8, y: 0.6}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1214, y: 228}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &292365522
 MonoBehaviour:
@@ -182,12 +182,12 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 048c8b2c83a7bcc4baa7b86f3b15107f, type: 3}
-    m_FontSize: 14
+    m_FontSize: 48
     m_FontStyle: 0
-    m_BestFit: 1
-    m_MinSize: 10
+    m_BestFit: 0
+    m_MinSize: 1
     m_MaxSize: 300
-    m_Alignment: 1
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -681,6 +681,11 @@ PrefabInstance:
     - target: {fileID: 8547484979563814095, guid: 7befc50059f95eb4ba335ef5b63104c7,
         type: 3}
       propertyPath: goToMainMenu
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8547484979563814095, guid: 7befc50059f95eb4ba335ef5b63104c7,
+        type: 3}
+      propertyPath: loadLightingScene
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
