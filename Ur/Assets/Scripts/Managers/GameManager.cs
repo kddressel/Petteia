@@ -214,30 +214,6 @@ public class GameManager : MonoBehaviour
         GameObject.FindObjectOfType<CameraSlider>().SlideToGamePos();
     }
 
-    int _targetBuildIndex;
-
-    void OnEnable()
-    {
-        Application.onBeforeRender += DoSwap;
-    }
-
-    void OnDisable()
-    {
-        Application.onBeforeRender -= DoSwap;
-    }
-    Scene _nextScene;
-
-    void DoSwap()
-    {
-        // wait until the OnBeforeRender that happens right after the scene is loaded, OnBeforeRender allows us to activate as soon as possible
-        if (!_nextScene.isLoaded) return;
-
-        // This runs just before the frame draw
-        SceneManager.SetActiveScene(_nextScene);
-        DynamicGI.UpdateEnvironment();
-        LightProbes.Tetrahedralize();
-    }
-
     Scene[] GetLoadedAdditiveScenes()
     {
         var sceneCount = SceneManager.sceneCount;
@@ -247,7 +223,6 @@ public class GameManager : MonoBehaviour
             var scene = SceneManager.GetSceneAt(i);
             if (scene.isLoaded && scene.name != persistantScene.name && scene.name != persistentLightingScene.name)
             {
-                Debug.Log("adding scene " +  scene.name + " with " + persistantScene.name + " and " + persistentLightingScene.name);
                 loadedAdditiveScenes.Add(scene);
             }
         }
@@ -256,8 +231,6 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator LoadScene(int index)
     {
-        _targetBuildIndex = index;
-
         //If you're loading a scene from the pause menu, timeScale is 0, so we need to reset it
         //Most of this will still work, but not the artificially inflated loading
         Time.timeScale = 1;
@@ -281,23 +254,7 @@ public class GameManager : MonoBehaviour
                 yield return SceneManager.UnloadSceneAsync(scene);
             }
 
-            //SceneManager.SetActiveScene(persistentLightingScene);
-
             yield return SceneManager.LoadSceneAsync(index, LoadSceneMode.Additive);
-            //op.allowSceneActivation = false;
-
-            // wait until Unity has finished loading scene data
-            //while (op.progress < 0.9f)
-            //    yield return null;
-
-            // grab the handle
-
-            // signal DoSwap() to run at onBeforeRender
-            //_readyToSwap = true;
-
-            // now let Unity finish the activation step
-            //op.allowSceneActivation = true;
-            //yield return op;
         }
     }
 

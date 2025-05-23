@@ -111,11 +111,6 @@ public class PetteiaPlayerPiece : MonoBehaviour
     {
         if (enabled)
         {
-            if (EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
-
             active = false;
             if (real != null)
             {
