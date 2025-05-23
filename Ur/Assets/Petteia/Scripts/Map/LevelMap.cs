@@ -19,33 +19,30 @@ public class LevelMap : MonoBehaviour
         if (startingNode == null) return;
 
         var player = GameManager.Instance?.PlayerRecord;
-        string currentId = player?.CurrentLevel ?? startingNode.Id;
 
-        ApplyStates(startingNode, currentId, player, new HashSet<LevelNode>());
+        ApplyStates(startingNode, true, player, new HashSet<LevelNode>());
     }
 
-    private void ApplyStates(LevelNode node, string currentId, PlayerRecord player, HashSet<LevelNode> visited)
+    private void ApplyStates(LevelNode node, bool isUnlockedFromPrevious, PlayerRecord player, HashSet<LevelNode> visited)
     {
         if (!visited.Add(node)) return;
 
-        bool isCurrent = node.Id == currentId;
         bool isCleared = player != null && player.IsLevelCleared(node.Id);
 
-        node.state = isCurrent ? LevelState.Current
-                   : isCleared ? LevelState.Completed
+        node.state = isCleared ? LevelState.Completed
+                   : isUnlockedFromPrevious? LevelState.Current
                    : LevelState.Locked;
 
         node.RefreshVisuals();
 
-        bool unlockChildren = isCurrent || isCleared;
-        Debug.Log("unlock children: " + unlockChildren);
+        bool unlockChildren = isCleared;
 
         for (int i = 0; i < node.nextNodes.Count; i++)
         {
             if (i < node.pathPebbles.Count && node.pathPebbles[i])
                 node.pathPebbles[i].SetActive(unlockChildren);
 
-            ApplyStates(node.nextNodes[i], currentId, player, visited);
+            ApplyStates(node.nextNodes[i], unlockChildren, player, visited);
         }
     }
 
