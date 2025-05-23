@@ -194,13 +194,13 @@ public class PetteiaEnemyAI : MonoBehaviour
     {
       var piecePos = enemyPiece.GetComponent<PetteiaPosition>().Pos;
       piecePos = ViewToBoard(piecePos);
-      gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], piecePos);
+      gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], piecePos, enemyPiece.PieceType);
     }
     foreach (var playerPiece in pController.playerPieces)
     {
       var piecePos = playerPiece.pieceStartPos;
       piecePos = ViewToBoard(piecePos);
-      gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], piecePos);
+      gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], piecePos, playerPiece.PieceType);
     }
 
     var startNode = new BoardStateNode(null, gameModel.Board, gameModel.Players[0], gameModel.Players[1], null);

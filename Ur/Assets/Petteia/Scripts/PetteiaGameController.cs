@@ -190,6 +190,7 @@ public class PetteiaGameController : MonoBehaviour
     {
         Lastroll = ThreadsafeUtils.Random.Next(1, RulesFactory.MaxRoll);
         _rollUI.text = Lastroll.ToString();
+        _rollUI.color = PlayerTurn ? Color.black : Color.blue;
         Debug.Log("rolled a " + Lastroll);
     }
 
@@ -203,10 +204,6 @@ public class PetteiaGameController : MonoBehaviour
         playerDialog.EnableHighlight(playerTurn);
         enemyDialog.EnableHighlight(!playerTurn);
 
-        if (RulesFactory.UseDiceRoll)
-        {
-            Roll();
-        }
 
         if (playerTurn)
         {
@@ -214,6 +211,12 @@ public class PetteiaGameController : MonoBehaviour
             CheckCapture();
             CheckPlayerBlocked();
             playerTurn = false;
+
+            if (RulesFactory.UseDiceRoll)
+            {
+                Roll();
+            }
+
             enemyAI.CheckPieces();
             StartCoroutine(CheckGameOver());
 
@@ -228,6 +231,12 @@ public class PetteiaGameController : MonoBehaviour
             CheckCapture();
             CheckPlayerBlocked();
             playerTurn = true;
+
+            if (RulesFactory.UseDiceRoll)
+            {
+                Roll();
+            }
+
             enemyAI.CheckPieces();
             StartCoroutine(CheckGameOver());
 
@@ -284,13 +293,14 @@ public class PetteiaGameController : MonoBehaviour
         {
             for (int x = 0; x < 8; x++)
             {
+                var boardPos = BoardSquares[x, y];
                 if (positions[x, y] == 1)
                 {
-                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(x, y));
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(x, y), boardPos.CurrentPiece?.PieceType);
                 }
                 else if (positions[x, y] == 2)
                 {
-                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(x, y));
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(x, y), boardPos.CurrentPiece?.PieceType);
                 }
             }
         }

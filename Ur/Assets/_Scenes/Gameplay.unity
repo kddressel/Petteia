@@ -10916,6 +10916,16 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6504750698868062273, guid: 7f2240ad6538b4644a34ff83f3243264,
+        type: 3}
+      propertyPath: pieceType
+      value: King
+      objectReference: {fileID: 0}
+    - target: {fileID: 7611810778898283383, guid: 7f2240ad6538b4644a34ff83f3243264,
+        type: 3}
+      propertyPath: pieceType
+      value: King
+      objectReference: {fileID: 0}
     - target: {fileID: 8984249838823038217, guid: 7f2240ad6538b4644a34ff83f3243264,
         type: 3}
       propertyPath: m_Enabled
@@ -20024,6 +20034,10 @@ PrefabInstance:
     - target: {fileID: 1678744287, guid: fa27a1841ba3ca74d9015c76b29c0723, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1678744287, guid: fa27a1841ba3ca74d9015c76b29c0723, type: 3}
+      propertyPath: pieceType
+      value: King
       objectReference: {fileID: 0}
     - target: {fileID: 1678744287, guid: fa27a1841ba3ca74d9015c76b29c0723, type: 3}
       propertyPath: dummyParent

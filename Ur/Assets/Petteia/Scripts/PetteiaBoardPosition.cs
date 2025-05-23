@@ -11,6 +11,7 @@ public class PetteiaBoardPosition : MonoBehaviour
 	[HideInInspector] public bool occupied;
 
 	private PetteiaPlayerPiece currentPiece;
+	public PetteiaPlayerPiece CurrentPiece => currentPiece;
 
     void Start()
     {

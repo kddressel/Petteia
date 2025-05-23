@@ -67,6 +67,21 @@ namespace Assets.Petteia.Scripts.Model
         public IPlayerAgent Agent { get; internal set; }
     }
 
+    public class KingNumSpacesRulesSet : RulesSet
+    {
+        protected override bool IsValidDistance(string pieceType, int distance)
+        {
+            if(pieceType == "King")
+            {
+                return distance <= 8;
+            }
+            else
+            {
+                return distance <= 1;
+            }
+        }
+    }
+
     public class DiceRollNumSpacesRulesSet : RulesSet
     {
         int _numSpacesAllowedThisTurn = int.MaxValue;
@@ -99,7 +114,8 @@ namespace Assets.Petteia.Scripts.Model
             return probabilityOfRollingDistanceUnder * unobstructedMultiplier;
         }
 
-        protected override bool IsValidDistance(int distance) => distance <= _numSpacesAllowedThisTurn;
+        // TODO: make rulesets mix and matchable (&& multiple rulesets.IsValidDistance together)
+        protected override bool IsValidDistance(string pieceType, int distance) => distance <= _numSpacesAllowedThisTurn;
 
         public override PlayerModel AdvanceToNextTurn(PlayerModel[] players, PlayerModel currentTurn)
         {
@@ -110,7 +126,7 @@ namespace Assets.Petteia.Scripts.Model
 
     public class ConstantNumSpacesRulesSet : RulesSet
     {
-        protected override bool IsValidDistance(int distance) => distance <= 8;//2;
+        protected override bool IsValidDistance(string pieceType, int distance) => distance <= 8;//2;
     }
 
     /// <summary>
@@ -154,7 +170,7 @@ namespace Assets.Petteia.Scripts.Model
             }
         }
 
-        virtual protected bool IsValidDistance(int distance)
+        virtual protected bool IsValidDistance(string pieceType, int distance)
         {
             return true;
         }
@@ -180,8 +196,8 @@ namespace Assets.Petteia.Scripts.Model
         {
             var distance = board.GetDistance(from, to);
             var isUnobstructed = IsUnobstructed(board, from, to);
-
-            return isUnobstructed && IsValidDistance(distance);
+            var pieceType = board.GetPieceAt(from)?.PieceType;
+            return isUnobstructed && IsValidDistance(pieceType, distance);
         }
     }
 
@@ -190,11 +206,13 @@ namespace Assets.Petteia.Scripts.Model
     #region Board
     public class PieceModel
     {
+        public string PieceType { get; private set; }
         public PlayerModel Owner { get; private set; }
 
-        public PieceModel(PlayerModel owner)
+        public PieceModel(PlayerModel owner, string pieceType)
         {
             Owner = owner;
+            PieceType = pieceType;
         }
     }
 
@@ -268,14 +286,16 @@ namespace Assets.Petteia.Scripts.Model
             board._numPiecesPerPlayer[forPlayer] += incBy;
         }
 
-        public BoardStateModel PlaceNewPiece(PlayerModel forPlayer, Vector2Int onSpacePos)
+        public BoardStateModel PlaceNewPiece(PlayerModel forPlayer, Vector2Int onSpacePos, string pieceType)
         {
             var onSpace = GetOrCreateSpaceAt(onSpacePos);
 
             Debug.Assert(onSpace.Piece == null);
 
+            
+
             var clone = Clone();
-            clone.GetOrCreateSpaceAt(onSpace.Pos).Piece = new PieceModel(forPlayer);
+            clone.GetOrCreateSpaceAt(onSpace.Pos).Piece = new PieceModel(forPlayer, pieceType);
             IncrementPieceCounts(clone, forPlayer, 1);
             return clone;
         }

@@ -29,10 +29,10 @@ namespace Assets.Petteia.Scripts.Model
             {
                 return new DiceRollNumSpacesRulesSet(MaxRoll, numSpacesAllowedThisTurn);
             }
-            //else if (UseKing)
-            //{
-            //    //return new KingNumSpacesRulesSet(numSpacesAllowedThisTurn);
-            //}
+            else if (UseKing)
+            {
+                return new KingNumSpacesRulesSet();
+            }
             //else if (UsePlacePieces)
             //{
             //    //return new PlacePiecesNumSpacesRulesSet(numSpacesAllowedThisTurn);
@@ -65,8 +65,8 @@ namespace Assets.Petteia.Scripts.Model
 
             for (var i = 0; i < 8; i++)
             {
-                gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(i, 0));
-                gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(i, 7));
+                gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(i, 0), "");
+                gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(i, 7), "");
             }
         }
 
@@ -143,6 +143,7 @@ namespace Assets.Petteia.Scripts.Model
             string _toYPos;
             string _fromXPos;
             string _fromYPos;
+            string _pieceType;
 
             private void OnEnable()
             {
@@ -178,12 +179,13 @@ namespace Assets.Petteia.Scripts.Model
                 _player = EditorGUILayout.TextField("Player", _player);
                 _toXPos = EditorGUILayout.TextField("XPos", _toXPos);
                 _toYPos = EditorGUILayout.TextField("YPos", _toYPos);
+                _pieceType = EditorGUILayout.TextField("YPos", _pieceType);
                 if (GUILayout.Button("Place new Piece"))
                 {
                     var player = gameModel.Players[int.Parse(_player)];
                     var pos = new Vector2Int(int.Parse(_toXPos), int.Parse(_toYPos));
 
-                    gameModel.Board = gameModel.Board.PlaceNewPiece(player, pos);
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(player, pos, _pieceType);
                 }
 
                 EditorGUILayout.LabelField("----Move Pieces----");

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PetteiaPlayerPiece : MonoBehaviour
+public class PetteiaPlayerPiece : MonoBehaviour, IPiece
 {
     public Vector2Int pieceStartPos;
     public PetteiaGameController pController;
@@ -20,6 +20,9 @@ public class PetteiaPlayerPiece : MonoBehaviour
     private Vector2Int potentialPos;
     private List<PetteiaBoardPosition> validMoves = new List<PetteiaBoardPosition>();
     private bool gameStarted = false;
+
+    public string pieceType;
+    public string PieceType => pieceType;
 
     private Camera cam;
 
@@ -37,6 +40,11 @@ public class PetteiaPlayerPiece : MonoBehaviour
 
         potentialPos = pieceStartPos;
         _goalPos = transform.position;
+
+        if(pieceType == "King" && RulesFactory.UseKing)
+        {
+            GetComponentInChildren<Renderer>().material.color = Color.black;
+        }
     }
 
     Vector3 _goalPos;
@@ -160,11 +168,11 @@ public class PetteiaPlayerPiece : MonoBehaviour
             {
                 if (pController.positions[x, y] == 1)
                 {
-                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(x, y));
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(x, y), pController.BoardSquares[x, y]?.CurrentPiece?.PieceType);
                 }
                 else if (pController.positions[x, y] == 2)
                 {
-                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(x, y));
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(x, y), pController.BoardSquares[x, y]?.CurrentPiece?.PieceType);
                 }
             }
         }
