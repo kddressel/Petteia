@@ -91,5 +91,8 @@ public class TitleScreenButtons : MenuButtons
         PlayerPrefs.DeleteAll();
         SaveManager.RestoreDefaults();
         SettingsManager.InitializeSettings();
+
+        Saver.SaveToDisk(new SaveData());
+        GameManager.Instance.InitializeSave();
     }
 }

@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void InitializeSave()
+    public void InitializeSave()
     {
         // load save data if we have it
         SaveData = Saver.LoadFromDisk();
