@@ -3364,6 +3364,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1209541424}
     m_Modifications:
+    - target: {fileID: 1150738950816104221, guid: 44ec58083e4df8743ba0867df004ece2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2305010571576169156, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3427,32 +3432,32 @@ PrefabInstance:
     - target: {fileID: 2305010573361791738, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2305010573361791738, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2305010573361791738, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 321.67606
       objectReference: {fileID: 0}
     - target: {fileID: 2305010573361791738, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 103.16426
       objectReference: {fileID: 0}
     - target: {fileID: 2305010573361791738, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 160.83803
       objectReference: {fileID: 0}
     - target: {fileID: 2305010573361791738, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -327.91064
       objectReference: {fileID: 0}
     - target: {fileID: 3463269220170429892, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
@@ -3468,6 +3473,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 265626129}
+    - target: {fileID: 3769800080677536465, guid: 44ec58083e4df8743ba0867df004ece2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UnpauseMinigame
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769800080677536465, guid: 44ec58083e4df8743ba0867df004ece2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PetteiaGameController, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3945748981379708439, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
@@ -3478,11 +3493,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
+      objectReference: {fileID: 265626129}
+    - target: {fileID: 4224801781431546560, guid: 44ec58083e4df8743ba0867df004ece2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: RestartMinigame
+      objectReference: {fileID: 0}
+    - target: {fileID: 4224801781431546560, guid: 44ec58083e4df8743ba0867df004ece2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: PetteiaGameController, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4224801781932963158, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
+      objectReference: {fileID: 265626129}
+    - target: {fileID: 4224801781932963158, guid: 44ec58083e4df8743ba0867df004ece2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: ExitGameplay
+      objectReference: {fileID: 0}
+    - target: {fileID: 4224801781932963158, guid: 44ec58083e4df8743ba0867df004ece2,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: PetteiaGameController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5351982919245331158, guid: 44ec58083e4df8743ba0867df004ece2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5905192209306259831, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
@@ -3492,32 +3532,32 @@ PrefabInstance:
     - target: {fileID: 6504081895539984177, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6504081895539984177, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6504081895539984177, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 321.67606
       objectReference: {fileID: 0}
     - target: {fileID: 6504081895539984177, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 149.21901
       objectReference: {fileID: 0}
     - target: {fileID: 6504081895539984177, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 160.83803
       objectReference: {fileID: 0}
     - target: {fileID: 6504081895539984177, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -74.609505
       objectReference: {fileID: 0}
     - target: {fileID: 6747136132928614085, guid: 44ec58083e4df8743ba0867df004ece2,
         type: 3}

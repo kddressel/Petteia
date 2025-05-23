@@ -179,11 +179,23 @@ public class PetteiaGameController : MonoBehaviour
     }
     // TODO: end copy paste block
 
+    public void UnpauseMinigame()
+    {
+        Time.timeScale = 1f;
+        pauseMenuAnim.SetBool("PauseMenuisActive", false);
+        modalBlocker.SetActive(false);
+    }
+
     // TODO: Bring these back
     public void RestartMinigame()
     {
         Debug.Log("Restart!");
         GameManager.LoadGamePlay();
+    }
+
+    public void ExitGameplay()
+    {
+        GameManager.LoadMainMenu();
     }
 
     void Roll()
