@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 2
   RuleSet: 0
+  MaxRoll: 8
+  Personality: 1
   CrewId: 8
+  Description: Now you'll play against a very aggressive player using the original
+    rules. Good strategy? Maybe.

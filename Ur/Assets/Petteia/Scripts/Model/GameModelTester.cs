@@ -21,7 +21,7 @@ namespace Assets.Petteia.Scripts.Model
         public static bool UseKing = false;
         public static bool UsePlacePieces = false;
 
-        public const int MaxRoll = 8;
+        public static int MaxRoll = 8;
         public static RulesSet MakeRulesSet(int numSpacesAllowedThisTurn)
         {
             // TODO: allow mix and match

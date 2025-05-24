@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 3
   RuleSet: 2
+  MaxRoll: 1
+  Personality: 2
   CrewId: 9
+  Description: Now you'll play King Rules against a very difficult defensive player.
+    It'll be hard to trick them.

@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 4
   RuleSet: 2
+  MaxRoll: 1
+  Personality: 0
   CrewId: 10
+  Description: Finally, you'll play an expert player in King Rules.

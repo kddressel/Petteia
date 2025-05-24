@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 3
   RuleSet: 0
+  MaxRoll: 8
+  Personality: 0
   CrewId: 27
+  Description: Now back to basic rules, against a very hard player.

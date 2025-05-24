@@ -77,7 +77,7 @@ namespace Assets.Petteia.Scripts.Model
             }
             else
             {
-                return distance <= 1;
+                return distance <= RulesFactory.MaxRoll;
             }
         }
     }
@@ -126,7 +126,7 @@ namespace Assets.Petteia.Scripts.Model
 
     public class ConstantNumSpacesRulesSet : RulesSet
     {
-        protected override bool IsValidDistance(string pieceType, int distance) => distance <= 8;//2;
+        protected override bool IsValidDistance(string pieceType, int distance) => distance <= RulesFactory.MaxRoll;
     }
 
     /// <summary>

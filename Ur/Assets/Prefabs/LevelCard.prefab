@@ -406,7 +406,7 @@ MonoBehaviour:
   nextNodes: []
   pathPebbles: []
   button: {fileID: 1472679336961341553}
-  infoButton: {fileID: 0}
+  infoButton: {fileID: 326126472031939513}
   state: 0
 --- !u!114 &1472679336961341553
 MonoBehaviour:

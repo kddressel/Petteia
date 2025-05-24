@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 4
   RuleSet: 0
+  MaxRoll: 1
+  Personality: 0
   CrewId: 127
+  Description: In this challenge, you'll play one of the experts with only 1 space
+    at a time, which may incraese the need for strategic thinking.

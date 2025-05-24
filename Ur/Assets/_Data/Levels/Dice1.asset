@@ -14,4 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 1
   RuleSet: 1
+  MaxRoll: 8
+  Personality: 0
   CrewId: 157
+  Description: We know the game may have been played with different number of spaces
+    per turn. There's some evidence that Petteia was sometimes played with dice to
+    decide how many spaces you could move, instead of a set number. Let's try that!

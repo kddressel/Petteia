@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 0
   RuleSet: 0
+  MaxRoll: 8
+  Personality: 0
   CrewId: 11
+  Description: Basic intro to the game with the most accepted rules

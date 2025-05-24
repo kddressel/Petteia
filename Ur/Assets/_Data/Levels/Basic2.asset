@@ -14,4 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 1
   RuleSet: 0
+  MaxRoll: 1
+  Personality: 0
   CrewId: 21
+  Description: Some people think the game may have been played one space at a time,
+    allowing for more planning ahead. We don't know how it was originally played,
+    so we'll show you several different ways. Which do you think plays the best?

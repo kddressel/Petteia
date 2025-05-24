@@ -14,4 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 1
   RuleSet: 2
+  MaxRoll: 1
+  Personality: 0
   CrewId: 24
+  Description: The Roman game, Ludus Latrunculorum, is derived from Petteia. It may
+    have introduced the "Dux" or King to the rules. In this variant, one piece can
+    move 8 spaces, while the others can only move 1 space at a time.

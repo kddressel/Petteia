@@ -14,4 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 2
   RuleSet: 1
+  MaxRoll: 3
+  Personality: 2
   CrewId: 22
+  Description: Again, we don't know how this was played. Maybe you could only get
+    a roll of 3 spaces max. Also, this character likes to play it safe, so lets see
+    how that affects the strategy.

@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 4
   RuleSet: 1
+  MaxRoll: 8
+  Personality: 0
   CrewId: 161
+  Description: Now you'll play an expert player in Dice Rules.

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using System.Linq;
 using Assets.Petteia.Scripts.Model;
 using System.Runtime.InteropServices;
+using static LevelDef;
 
 public enum AIDifficulty { VeryEasy, Easy, Medium, Hard, VeryHard, None }
 
@@ -37,6 +38,7 @@ public class GameManager : MonoBehaviour
     public void Save() => Saver.SaveToDisk(SaveData);
 
     public static AIDifficulty SelectedDifficulty { get; set; } = AIDifficulty.Hard;    // default to medium when playing outside of menu flow
+    public static PersonalityType Personality { get; set; } = PersonalityType.None; // default to none when playing outside of menu flow
 
     public static List<CrewMember> MasterCrewList { get; set; }
     public static PlayableCharacter SelectedCharacter { get; set; }
@@ -189,10 +191,12 @@ public class GameManager : MonoBehaviour
     public static void LoadLevel(LevelDef def)
     {
         GameManager.SelectedDifficulty = def.Difficulty;
+        GameManager.Personality = def.Personality;
         
         RulesFactory.UseDiceRoll = (def.RuleSet & LevelDef.Rules.Dice) != 0;
         RulesFactory.UseKing = (def.RuleSet & LevelDef.Rules.King) != 0;
         RulesFactory.UsePlacePieces = (def.RuleSet & LevelDef.Rules.PlacePieces) != 0;
+        RulesFactory.MaxRoll = def.MaxRoll;
 
         CameraSlider.StartPosition = CameraSlider.Position.Menu;
 

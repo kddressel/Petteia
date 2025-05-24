@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 2
   RuleSet: 2
+  MaxRoll: 3
+  Personality: 1
   CrewId: 14
+  Description: Now you'll play King Rules against a very aggressive player, and we'll
+    play with normal pieces moving 3 at a time instead of 1.

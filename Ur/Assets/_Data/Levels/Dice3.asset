@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 3
   RuleSet: 1
+  MaxRoll: 8
+  Personality: 0
   CrewId: 47
+  Description: Now you'll play a very skilled player with the original max roll of
+    8 spaces per turn.

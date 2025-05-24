@@ -15,8 +15,18 @@ public class LevelDef : ScriptableObject
         PlacePieces = 4
     }
 
+    public enum PersonalityType
+    {
+        None,
+        Aggressive,
+        Defensive
+    }
+
     public string Id => name;
     public AIDifficulty Difficulty;
     public Rules RuleSet;
+    public int MaxRoll;
+    public PersonalityType Personality;
     public int CrewId;
+    public string Description;
 }

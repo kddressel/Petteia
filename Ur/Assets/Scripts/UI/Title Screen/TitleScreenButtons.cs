@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,7 @@ public class TitleScreenButtons : MenuButtons
 {
     public MenuScreen[] extraScreens;
     public Button gameStartButton;
+    public TextDisplayBox textDisplayBox;
 
     private void OnEnable()
     {
@@ -84,6 +86,13 @@ public class TitleScreenButtons : MenuButtons
         {
             gameStartButton.interactable = true;
         }
+    }
+
+    public void ShowTextDisplayBox(string text, Action onConfirm, Action onCancel)
+    {
+        textDisplayBox.DisplayMessage(text, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f));
+        textDisplayBox.ConfirmButtonClicked += onConfirm;
+        textDisplayBox.CloseButtonClicked += onCancel;
     }
 
     public void ResetPlayerPrefs()

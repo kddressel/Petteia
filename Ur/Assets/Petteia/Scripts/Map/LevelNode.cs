@@ -40,14 +40,28 @@ public class LevelNode : MonoBehaviour
         }
     }
 
+    string GetLevelInfoText()
+    {
+        var crew = GameManager.MasterCrewList.FirstOrDefault(crew => crew.Id == LevelDef.CrewId);
+        var text = "<b>" + crew.CrewName + "</b>";
+        text += "\n" + LevelDef.Difficulty;
+        if(LevelDef.Personality != LevelDef.PersonalityType.None)
+        {
+            text += "\n" + LevelDef.Personality;
+        }
+        text += "\nSpaces: " + LevelDef.MaxRoll;
+        text += "\n" + LevelDef.Description;
+        return text;
+    }
+
     private void OnPlayClick()
     {
-        GameManager.LoadLevel(LevelDef);
+        GameObject.FindObjectOfType<TitleScreenButtons>().ShowTextDisplayBox(GetLevelInfoText(), () => GameManager.LoadLevel(LevelDef), () => { });
     }
 
     private void OnInfoClick()
     {
-        Debug.Log("Info clicked");
+        GameObject.FindObjectOfType<TitleScreenButtons>().ShowTextDisplayBox(GetLevelInfoText(), () => { }, () => { });
     }
 
     public void RefreshVisuals()
@@ -60,8 +74,12 @@ public class LevelNode : MonoBehaviour
         if (completedOverlay) completedOverlay.SetActive(state == LevelState.Completed);
 
         var crew = GameManager.MasterCrewList.FirstOrDefault(crew => crew.Id == LevelDef.CrewId);
-        if(crew == null) Debug.LogError("Missing crew " + LevelDef.CrewId);
-        CrewName.text = crew.CrewName + "\n" + LevelDef.Difficulty;
+        if (crew == null) Debug.LogError("Missing crew " + LevelDef.CrewId);
+        CrewName.text = "<b>" + crew.CrewName + "</b>\n" + LevelDef.Difficulty + "\nSpaces: " + LevelDef.MaxRoll;
+        if(LevelDef.Personality != LevelDef.PersonalityType.None)
+        {
+            CrewName.text += "\n" + LevelDef.Personality;
+        }
         CrewPortrait.sprite = crew.CrewPortrait;
     }
 }
