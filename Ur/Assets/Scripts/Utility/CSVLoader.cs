@@ -19,7 +19,7 @@ public static class CSVLoader
 		for (int row = 1; row < fileByLine.Length; row++) {
 			string[] records = fileByLine[row].Split(lineDelimiter, StringSplitOptions.None);
             
-			masterCrewList.Add(new CrewMember(records[1], int.Parse(records[0]), records[2], records[3]));
+			masterCrewList.Add(new CrewMember(records[1], int.Parse(records[0]), records[2], records[5]));
 		}
 
 		return masterCrewList;

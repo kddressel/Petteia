@@ -44,13 +44,13 @@ public class LevelNode : MonoBehaviour
     {
         var crew = GameManager.MasterCrewList.FirstOrDefault(crew => crew.Id == LevelDef.CrewId);
         var text = "<b>" + crew.CrewName + "</b>";
-        text += "\n" + LevelDef.Difficulty;
-        if(LevelDef.Personality != LevelDef.PersonalityType.None)
+        text += "\n" + crew.CrewDescription;
+        text += "\n<b>Difficulty:</b> " + LevelDef.Difficulty + "  <b>Spaces:</b> " + LevelDef.MaxRoll;
+        if (LevelDef.Personality != LevelDef.PersonalityType.None)
         {
-            text += "\n" + LevelDef.Personality;
+            text += "  <b>Personality:</b> " + LevelDef.Personality;
         }
-        text += "\nSpaces: " + LevelDef.MaxRoll;
-        text += "\n" + LevelDef.Description;
+        text += "\n\n" + LevelDef.Description;
         return text;
     }
 
