@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbf90ed2bdb8167428a202d608a5094a, type: 3}
   m_Name: Basic3
   m_EditorClassIdentifier: 
-  Difficulty: 2
+  Difficulty: 1
+  ErrorChance: 0.15
   RuleSet: 0
   MaxRoll: 8
   Personality: 1

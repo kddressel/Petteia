@@ -191,6 +191,7 @@ public class GameManager : MonoBehaviour
     public static void LoadLevel(LevelDef def)
     {
         GameManager.SelectedDifficulty = def.Difficulty;
+        RulesFactory.ErrorChance = def.ErrorChance;
         GameManager.Personality = def.Personality;
         
         RulesFactory.UseDiceRoll = (def.RuleSet & LevelDef.Rules.Dice) != 0;

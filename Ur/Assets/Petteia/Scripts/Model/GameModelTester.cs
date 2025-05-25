@@ -21,6 +21,8 @@ namespace Assets.Petteia.Scripts.Model
         public static bool UseKing = false;
         public static bool UsePlacePieces = false;
 
+        public static float ErrorChance = 0;
+
         public static int MaxRoll = 8;
         public static RulesSet MakeRulesSet(int numSpacesAllowedThisTurn)
         {

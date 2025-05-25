@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Dice3
   m_EditorClassIdentifier: 
   Difficulty: 3
+  ErrorChance: 0.01
   RuleSet: 1
   MaxRoll: 8
   Personality: 0

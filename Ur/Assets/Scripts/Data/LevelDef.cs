@@ -24,6 +24,7 @@ public class LevelDef : ScriptableObject
 
     public string Id => name;
     public AIDifficulty Difficulty;
+    public float ErrorChance;
     public Rules RuleSet;
     public int MaxRoll;
     public PersonalityType Personality;

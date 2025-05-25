@@ -9,6 +9,7 @@ using MiniGameFramework;
 using Assets.Petteia.Scripts.Model;
 using Shiny.Threads;
 using System;
+using System.Linq;
 
 public class PetteiaGameController : MonoBehaviour
 {
@@ -387,16 +388,33 @@ public class PetteiaGameController : MonoBehaviour
         enemyAI.CheckPieces();
         yield return null;
 
-        //Player win
-        if (enemyAI.pieces.Count <= 1 || Input.GetKey(KeyCode.W))
+        if(RulesFactory.UseKing)
         {
-            WinGame();
-        }
+            //Player win
+            if (enemyAI.pieces.Count(piece => piece.PieceType == "King") == 0 || Input.GetKey(KeyCode.W))
+            {
+                WinGame();
+            }
 
-        //Player loss
-        if (playerPieces.Count <= 1)
+            //Player loss
+            if (playerPieces.Count(piece => piece.PieceType == "King") == 0)
+            {
+                LoseGame();
+            }
+        }
+        else
         {
-            LoseGame();
+            //Player win
+            if (enemyAI.pieces.Count <= 1 || Input.GetKey(KeyCode.W))
+            {
+                WinGame();
+            }
+
+            //Player loss
+            if (playerPieces.Count <= 1)
+            {
+                LoseGame();
+            }
         }
     }
 

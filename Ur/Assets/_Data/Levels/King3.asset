@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: King3
   m_EditorClassIdentifier: 
   Difficulty: 3
+  ErrorChance: 0.1
   RuleSet: 2
   MaxRoll: 1
   Personality: 2

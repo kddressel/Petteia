@@ -209,6 +209,8 @@ namespace Assets.Petteia.Scripts.Model
         public string PieceType { get; private set; }
         public PlayerModel Owner { get; private set; }
 
+        public bool IsKing => PieceType == "King";
+
         public PieceModel(PlayerModel owner, string pieceType)
         {
             Owner = owner;

@@ -5,6 +5,7 @@ namespace Shiny.Solver
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEditor.Experimental.GraphView;
 
     namespace Petteia
     {
@@ -59,12 +60,25 @@ namespace Shiny.Solver
                 var piecesForOpponent = newBoard.GetNumPiecesForPlayer(OpponentPlayer);
                 var piecesForPlayer = newBoard.GetNumPiecesForPlayer(SelfPlayer as PlayerModel);
 
+                if(RulesFactory.UseKing)
+                {
+                    piecesForOpponent += newBoard.GetPiecesForPlayer(OpponentPlayer).Any(pos => newBoard.GetPieceAt(pos).IsKing) ? 0 : -2;
+                    piecesForPlayer += newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Any(pos => newBoard.GetPieceAt(pos).IsKing) ? 0 : -2;
+                }
+
+                if(RulesFactory.ErrorChance > 0 && ThreadsafeUtils.Random.NextDouble() < RulesFactory.ErrorChance)
+                {
+                    piecesForOpponent -= 1;
+                    piecesForPlayer += 1;
+                }
+
                 var pieceCountScore = piecesForPlayer - piecesForOpponent;
                 //var favorMiddleScore = newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Count(space => space.Pos.y > 2 && space.Pos.y < 6);
                 //var favorSidesScore = newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Count(space => space.Pos.x < 1 && space.Pos.x > 6);
                 //var favorDestructionScore = lastMoveBy == SelfPlayer ? move.numCaptured : 0;
                 var favorDefenseScore = lastMoveBy == OpponentPlayer ? -move.numCaptured : 0;
-                var favorAdvancingScore = (int)newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Average(space => space.y); // this advancement thing only works when AI is at the top
+                var pieces = newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel);
+                var favorAdvancingScore = pieces.Any() ? (int)pieces.Average(space => space.y) : 0; // this advancement thing only works when AI is at the top
 
                 //return (pieceCountScore + favorDefenseScore);//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
 
@@ -250,8 +264,18 @@ namespace Shiny.Solver
 
             // we have a forced choice for turn 0
             // game ends when you're down to only one piece
-            public bool IsEnd(BoardStateNode node) => //(HasValidManualTurn(node.BoardState, Turn) && node.Parent != null) ||
-                node.BoardState.GetNumPiecesForPlayer(Players.First()) == 1 || node.BoardState.GetNumPiecesForPlayer(Players.Last()) == 1;
+            public bool IsEnd(BoardStateNode node)
+            {
+                if(RulesFactory.UseKing)
+                {
+                    return node.BoardState.GetPiecesForPlayer(Players.First()).Count(pos => node.BoardState.GetPieceAt(pos).IsKing) == 0 || node.BoardState.GetPiecesForPlayer(Players.Last()).Count(pos => node.BoardState.GetPieceAt(pos).IsKing) == 0;
+                }
+                else
+                {
+                    return node.BoardState.GetNumPiecesForPlayer(Players.First()) == 1 || node.BoardState.GetNumPiecesForPlayer(Players.Last()) == 1;
+                }
+                //(HasValidManualTurn(node.BoardState, Turn) && node.Parent != null) ||
+            }
         }
     }
 }
