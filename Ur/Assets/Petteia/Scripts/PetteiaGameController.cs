@@ -759,7 +759,7 @@ public class PetteiaGameController : MonoBehaviour
             _aiMoveRequested = false;
 
             var startTime = Time.realtimeSinceStartup;
-            var solver = new MinimaxGameSolver(4);
+            var solver = new MinimaxGameSolver(2);
 
             await new WaitForBackgroundThread();
             var solution = await solver.Solve(graph, graph.Start);

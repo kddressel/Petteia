@@ -4,9 +4,7 @@ namespace Shiny.Solver
     using Shiny.Threads;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
-    using UnityEditor.Experimental.GraphView;
 
     namespace Petteia
     {
