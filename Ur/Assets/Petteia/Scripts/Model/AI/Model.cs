@@ -4,6 +4,7 @@ namespace Shiny.Solver
     using Shiny.Threads;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using UnityEditor.Experimental.GraphView;
 
@@ -54,25 +55,32 @@ namespace Shiny.Solver
 
             public BoardStateNode Start { get; set; }
 
-            virtual protected int EvaluateMove(MoveInfo move, BoardStateModel newBoard, PlayerModel lastMoveBy)
+            virtual protected int EvaluateMove(MoveInfo move, BoardStateModel newBoard, PlayerModel lastMoveBy, BoardStateNode node)
             {
                 // PERF: comment out things not being used to save time evaluating the leaves
                 var piecesForOpponent = newBoard.GetNumPiecesForPlayer(OpponentPlayer);
                 var piecesForPlayer = newBoard.GetNumPiecesForPlayer(SelfPlayer as PlayerModel);
 
-                if(RulesFactory.UseKing)
+                if (RulesFactory.UseKing)
                 {
-                    piecesForOpponent += newBoard.GetPiecesForPlayer(OpponentPlayer).Any(pos => newBoard.GetPieceAt(pos).IsKing) ? 0 : -2;
-                    piecesForPlayer += newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Any(pos => newBoard.GetPieceAt(pos).IsKing) ? 0 : -2;
+                    piecesForOpponent += newBoard.GetPiecesForPlayer(OpponentPlayer).Any(pos => newBoard.GetPieceAt(pos).IsKing) ? 0 : -10;
+                    piecesForPlayer += newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Any(pos => newBoard.GetPieceAt(pos).IsKing) ? 0 : -10;
                 }
 
-                if(RulesFactory.ErrorChance > 0 && ThreadsafeUtils.Random.NextDouble() < RulesFactory.ErrorChance && SelfPlayer == Players[1])
+                if (RulesFactory.ErrorChance > 0 && ThreadsafeUtils.Random.NextDouble() < RulesFactory.ErrorChance && SelfPlayer == Players[1])
                 {
                     piecesForOpponent -= 1;
                     piecesForPlayer += 1;
                 }
 
-                var pieceCountScore = piecesForPlayer - piecesForOpponent;
+                float pieceCountScore = piecesForPlayer - piecesForOpponent;
+
+                // favor trading over doing nothing, to nudge towards an endgame and lightly avoid draws
+                if (pieceCountScore == 0 && (piecesForPlayer + piecesForOpponent) < node.Parent.BoardState.GetNumPieces())
+                {
+                    pieceCountScore += 0.5f;
+                }
+
                 //var favorMiddleScore = newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Count(space => space.Pos.y > 2 && space.Pos.y < 6);
                 //var favorSidesScore = newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Count(space => space.Pos.x < 1 && space.Pos.x > 6);
                 //var favorDestructionScore = lastMoveBy == SelfPlayer ? move.numCaptured : 0;
@@ -85,15 +93,15 @@ namespace Shiny.Solver
                 if (GameManager.Personality == LevelDef.PersonalityType.Aggressive && SelfPlayer == Players[1])
                 {
                     // favor advancing
-                    if(pieceCountScore == 0)
+                    if (pieceCountScore == 0)
                     {
                         // if we have no advantage, favor advancing
-                        return (int)Math.Round((pieceCountScore + favorAdvancingScore * 1.1f) * 10 * move.precompmutedWeight);
+                        return (int)Math.Round((pieceCountScore + favorAdvancingScore * 1.1f) * 100000 * move.precompmutedWeight);
                     }
                     else
                     {
                         // if we have an advantage, favor destruction
-                        return (int)Math.Round((pieceCountScore + favorAdvancingScore * 0.9f) * 10 * move.precompmutedWeight);
+                        return (int)Math.Round((pieceCountScore + favorAdvancingScore * 0.9f) * 100000 * move.precompmutedWeight);
                     }
                 }
                 else if (GameManager.Personality == LevelDef.PersonalityType.Defensive && SelfPlayer == Players[1])
@@ -101,18 +109,18 @@ namespace Shiny.Solver
                     if (pieceCountScore == 0)
                     {
                         // if we have no advantage, favor being defensive
-                        return (int)Math.Round((pieceCountScore + favorDefenseScore * 1.1f) * 10 * move.precompmutedWeight);
+                        return (int)Math.Round((pieceCountScore + favorDefenseScore * 1.1f) * 100000 * move.precompmutedWeight);
                     }
                     else
                     {
                         // if we have an advantage, favor destruction to make sure that we still attack when appropriate
-                        return (int)Math.Round((pieceCountScore + favorDefenseScore * 0.9f) * 10 * move.precompmutedWeight);
+                        return (int)Math.Round((pieceCountScore + favorDefenseScore * 0.9f) * 100000 * move.precompmutedWeight);
                     }
                 }
                 else
                 {
                     // this is the original one, which seemed balanced between offense and defense, attacking while still protecting itself. somewhat magic
-                    return (int)Math.Round((pieceCountScore + favorDefenseScore) * 10 * move.precompmutedWeight);//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
+                    return (int)Math.Round((pieceCountScore + favorDefenseScore) * 1000 * move.precompmutedWeight);//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
                 }
 
                 // gets more aggressive in the late game, to avoid stalemates due to being too defensive
@@ -164,7 +172,7 @@ namespace Shiny.Solver
                 //    return IsMatchingMoveForManualTurn(node.BoardState, Turn, node.MoveInfo) ? 1 : 0;
                 //}
 
-                return EvaluateMove(node.MoveInfo, node.BoardState, node.LastMoveBy);
+                return EvaluateMove(node.MoveInfo, node.BoardState, node.LastMoveBy, node);
             }
 
             public int GetCost(BoardStateNode from, BoardStateNode to)
@@ -222,10 +230,11 @@ namespace Shiny.Solver
                             numCaptures++;
                         }
 
-                        var weight = Rules.GetProbabilityOfBeingValidMove(node.BoardState, spaceWithPiece, move, node.Parent == null);
-
                         //UnityEngine.Debug.Log("possible next state - from: " + spaceWithPiece + " to " + move + " weight " + weight);
-                        yield return new BoardStateNode(node, newBoard, currTurnPlayer, node.LastMoveBy, new MoveInfo { from = spaceWithPiece, to = move, numCaptured = numCaptures, precompmutedWeight = weight });
+                        // weights compound and become less certain the deeper in the tree you go
+                        var prevWeight = node != null && node.MoveInfo != null ? node.MoveInfo.precompmutedWeight : 1;
+                        var newWeight = info.Weight * prevWeight;
+                        yield return new BoardStateNode(node, newBoard, currTurnPlayer, node.LastMoveBy, new MoveInfo { from = spaceWithPiece, to = move, numCaptured = numCaptures, precompmutedWeight = newWeight });
                     }
 
                     //UnityEngine.Debug.Log("Space with piece for player " + currTurnPlayer.Def.Name + " : " + spaceWithPiece.Pos);
@@ -266,7 +275,7 @@ namespace Shiny.Solver
             // game ends when you're down to only one piece
             public bool IsEnd(BoardStateNode node)
             {
-                if(RulesFactory.UseKing)
+                if (RulesFactory.UseKing)
                 {
                     return node.BoardState.GetPiecesForPlayer(Players.First()).Count(pos => node.BoardState.GetPieceAt(pos).IsKing) == 0 || node.BoardState.GetPiecesForPlayer(Players.Last()).Count(pos => node.BoardState.GetPieceAt(pos).IsKing) == 0;
                 }
