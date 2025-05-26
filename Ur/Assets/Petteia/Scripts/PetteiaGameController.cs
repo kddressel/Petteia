@@ -10,6 +10,8 @@ using Assets.Petteia.Scripts.Model;
 using Shiny.Threads;
 using System;
 using System.Linq;
+using Shiny.Solver.Petteia;
+using Shiny.Solver;
 
 public class PetteiaGameController : MonoBehaviour
 {
@@ -61,6 +63,7 @@ public class PetteiaGameController : MonoBehaviour
     public GameObject modalBlocker;
     public Animator pauseMenuAnim;
 
+    [SerializeField] Button _hintButton;
     [SerializeField] TextMeshProUGUI _rollUI;
 
     public TavernaMiniGameDialog playerDialog;
@@ -131,6 +134,9 @@ public class PetteiaGameController : MonoBehaviour
         //Player goes first, so their pieces are highlighted and the enemy's are not
         HighlightPlayerPieces(true);
         enemyAI.ToggleEnemyHighlight(false);
+
+        _hintButton.gameObject.SetActive(true);
+        _hintButton.onClick.AddListener(OnHintClick);
     }
 
     public void EnableAllPlayerPieces()
@@ -236,6 +242,9 @@ public class PetteiaGameController : MonoBehaviour
             HighlightPlayerPieces(false);
             enemyAI.ToggleEnemyHighlight(true);
 
+            _hintButton.onClick.RemoveListener(OnHintClick);
+            _hintButton.gameObject.SetActive(false);
+
             enemyAI.StartEnemyTurn();
         }
         else
@@ -244,6 +253,7 @@ public class PetteiaGameController : MonoBehaviour
             CheckCapture();
             CheckPlayerBlocked();
             playerTurn = true;
+            _playerTurn++;
 
             if (RulesFactory.UseDiceRoll)
             {
@@ -255,7 +265,16 @@ public class PetteiaGameController : MonoBehaviour
 
             HighlightPlayerPieces(true);
             enemyAI.ToggleEnemyHighlight(false);
+
+            _hintButton.gameObject.SetActive(true);
+            _hintButton.onClick.AddListener(OnHintClick);
         }
+    }
+
+    void OnHintClick()
+    {
+        Debug.Log("hint clicked");
+        StartCoroutine(GenerateMoveHint(applyMove: false));
     }
 
     /// <summary>
@@ -388,7 +407,7 @@ public class PetteiaGameController : MonoBehaviour
         enemyAI.CheckPieces();
         yield return null;
 
-        if(RulesFactory.UseKing)
+        if (RulesFactory.UseKing)
         {
             //Player win
             if (enemyAI.pieces.Count(piece => piece.PieceType == "King") == 0 || Input.GetKey(KeyCode.W))
@@ -657,5 +676,108 @@ public class PetteiaGameController : MonoBehaviour
     public bool PlayerTurn
     {
         get { return playerTurn; }
+    }
+
+    bool _aiMoveRequested;
+
+    BoardStateGraph _graph;
+    MoveInfo _queuedMove;
+    bool _moveCompleted;
+    int _playerTurn;
+
+    IEnumerator GenerateMoveHint(bool applyMove)
+    {
+        var playerDefs = new PlayerDef[]
+        {
+        new PlayerDef { Name = "You (X)", AgentType = typeof(HumanPlayerAgent) },
+        new PlayerDef { Name = "Other (O)", AgentType = typeof(HumanPlayerAgent) }
+        };
+
+        Debug.Log("Generating move hint with roll " + Lastroll);
+        var gameModel = new GameModel<RulesSet>(playerDefs, 8, 8, RulesFactory.MakeRulesSet(Lastroll));
+
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                if (positions[x, y] == 1)
+                {
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[1], new Vector2Int(x, y), BoardSquares[x, y]?.CurrentPiece?.PieceType);
+                }
+                else if (positions[x, y] == 2)
+                {
+                    gameModel.Board = gameModel.Board.PlaceNewPiece(gameModel.Players[0], new Vector2Int(x, y), BoardSquares[x, y]?.CurrentPiece?.PieceType);
+                }
+            }
+        }
+        var startNode = new BoardStateNode(null, gameModel.Board, gameModel.Players[1], gameModel.Players[0], null);
+        _graph = new BoardStateGraph(gameModel.Rules, gameModel.Players, startNode, gameModel.Players[0]);
+        _graph.Turn = _playerTurn;
+
+        Debug.Log("Generating move hint");
+        _aiMoveRequested = true;
+        while (!_moveCompleted) yield return new WaitForEndOfFrame();
+
+        var moveInfo = _queuedMove;
+
+        Debug.Log("best move would be to move from " + moveInfo.from + " to " + moveInfo.to);
+        var fromView = moveInfo.from;
+        var toView = moveInfo.to;
+        BoardSquares[fromView.x, fromView.y].BoldHighlightSpace(true);
+        BoardSquares[toView.x, toView.y].BoldHighlightSpace(true);
+        yield return new WaitForSeconds(0.75f);
+        BoardSquares[fromView.x, fromView.y].BoldHighlightSpace(false);
+        BoardSquares[toView.x, toView.y].BoldHighlightSpace(false);
+
+        if (applyMove)
+        {
+            var piece = playerPieces.FirstOrDefault(piece => piece.pieceStartPos == fromView);
+            if (piece != null)
+            {
+                var boardPos = BoardSquares[fromView.x, fromView.y];
+                piece.transform.position = boardPos.transform.position;
+                MovePiece(fromView, toView, playerTag);
+                piece.pieceStartPos = toView;
+                SwitchTurn();
+            }
+        }
+
+        _queuedMove = null;
+        _moveCompleted = false;
+    }
+
+    async void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            StartCoroutine(GenerateMoveHint(applyMove: true));
+        }
+
+        var graph = _graph;
+        if (_aiMoveRequested && graph != null)
+        {
+            _aiMoveRequested = false;
+
+            var startTime = Time.realtimeSinceStartup;
+            var solver = new MinimaxGameSolver(4);
+
+            await new WaitForBackgroundThread();
+            var solution = await solver.Solve(graph, graph.Start);
+            await new WaitForUpdate();
+
+            var (score, move) = solution;
+            if (move == null)
+            {
+                Debug.Log("No good moves, Cannot give a hint.");
+                _moveCompleted = true;
+                _queuedMove = null;
+            }
+            else
+            {
+                Debug.Log("Move Computed in " + (Time.realtimeSinceStartup - startTime) + " s. Picked option with score " + score + " weight was " + move.MoveInfo.precompmutedWeight + " unweighted score was " + (score / move.MoveInfo.precompmutedWeight));
+                _queuedMove = move.MoveInfo;
+                _moveCompleted = true;
+            }
+        }
     }
 }

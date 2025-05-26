@@ -105,13 +105,21 @@ namespace Assets.Petteia.Scripts.Model
             _numSpacesAllowedThisTurn = ThreadsafeUtils.Random.Next(1, _maxSpaces);
         }
 
-        public override float GetProbabilityOfBeingValidMove(BoardStateModel board, Vector2Int from, Vector2Int to)
+        public override float GetProbabilityOfBeingValidMove(BoardStateModel board, Vector2Int from, Vector2Int to, bool isRootNode)
         {
             // full override on purpose since IsValidMove and IsValidDistance can't be used for knowing an enemy's next move when there's a random roll involved
+            // when you're on a root node, we know the roll though. but when you're deeper you don't know the future rolls
             var unobstructedMultiplier = IsUnobstructed(board, from, to) ? 1 : 0;
-            var distance = board.GetDistance(from, to);
-            var probabilityOfRollingDistanceUnder = (float)(_maxSpaces - distance + 1) / (float)_maxSpaces;
-            return probabilityOfRollingDistanceUnder * unobstructedMultiplier;
+            if(isRootNode)
+            {
+                return base.GetProbabilityOfBeingValidMove(board, from, to, isRootNode);
+            }
+            else
+            {
+                var distance = board.GetDistance(from, to);
+                var probabilityOfRollingDistanceUnder = (float)(_maxSpaces - distance + 1) / (float)_maxSpaces;
+                return probabilityOfRollingDistanceUnder * unobstructedMultiplier;
+            }
         }
 
         // TODO: make rulesets mix and matchable (&& multiple rulesets.IsValidDistance together)
@@ -178,7 +186,7 @@ namespace Assets.Petteia.Scripts.Model
         /// <summary>
         /// used in prediction of enemy's turn
         /// </summary>
-        virtual public float GetProbabilityOfBeingValidMove(BoardStateModel board, Vector2Int from, Vector2Int to)
+        virtual public float GetProbabilityOfBeingValidMove(BoardStateModel board, Vector2Int from, Vector2Int to, bool isRootNode)
         {
             return IsValidMove(board, from, to) ? 1 : 0;
         }

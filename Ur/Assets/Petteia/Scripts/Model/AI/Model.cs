@@ -66,7 +66,7 @@ namespace Shiny.Solver
                     piecesForPlayer += newBoard.GetPiecesForPlayer(SelfPlayer as PlayerModel).Any(pos => newBoard.GetPieceAt(pos).IsKing) ? 0 : -2;
                 }
 
-                if(RulesFactory.ErrorChance > 0 && ThreadsafeUtils.Random.NextDouble() < RulesFactory.ErrorChance)
+                if(RulesFactory.ErrorChance > 0 && ThreadsafeUtils.Random.NextDouble() < RulesFactory.ErrorChance && SelfPlayer == Players[1])
                 {
                     piecesForOpponent -= 1;
                     piecesForPlayer += 1;
@@ -82,7 +82,7 @@ namespace Shiny.Solver
 
                 //return (pieceCountScore + favorDefenseScore);//(pieceCountScore * 100) + ThreadsafeUtils.Random.Next(0, 50);
 
-                if (GameManager.Personality == LevelDef.PersonalityType.Aggressive)
+                if (GameManager.Personality == LevelDef.PersonalityType.Aggressive && SelfPlayer == Players[1])
                 {
                     // favor advancing
                     if(pieceCountScore == 0)
@@ -96,7 +96,7 @@ namespace Shiny.Solver
                         return (int)Math.Round((pieceCountScore + favorAdvancingScore * 0.9f) * 10 * move.precompmutedWeight);
                     }
                 }
-                else if (GameManager.Personality == LevelDef.PersonalityType.Defensive)
+                else if (GameManager.Personality == LevelDef.PersonalityType.Defensive && SelfPlayer == Players[1])
                 {
                     if (pieceCountScore == 0)
                     {
@@ -190,12 +190,12 @@ namespace Shiny.Solver
                 foreach (var spaceWithPiece in node.BoardState.GetPiecesForPlayer(currTurnPlayer).Shuffle())
                 {
                     var validMovesRow = node.BoardState.GetRowOfSpaces(spaceWithPiece.y)
-                      .Select(move => new { Move = move, Weight = Rules.GetProbabilityOfBeingValidMove(node.BoardState, spaceWithPiece, move) })
+                      .Select(move => new { Move = move, Weight = Rules.GetProbabilityOfBeingValidMove(node.BoardState, spaceWithPiece, move, node.Parent == null) })
                       .Where(info => info.Weight > 0)
                       .OrderByDescending(info => info.Weight);
 
                     var validMovesCol = node.BoardState.GetColumnOfSpaces(spaceWithPiece.x)
-                      .Select(move => new { Move = move, Weight = Rules.GetProbabilityOfBeingValidMove(node.BoardState, spaceWithPiece, move) })
+                      .Select(move => new { Move = move, Weight = Rules.GetProbabilityOfBeingValidMove(node.BoardState, spaceWithPiece, move, node.Parent == null) })
                       .Where(info => info.Weight > 0)
                       .OrderByDescending(info => info.Weight);
 
@@ -222,7 +222,7 @@ namespace Shiny.Solver
                             numCaptures++;
                         }
 
-                        var weight = Rules.GetProbabilityOfBeingValidMove(node.BoardState, spaceWithPiece, move);
+                        var weight = Rules.GetProbabilityOfBeingValidMove(node.BoardState, spaceWithPiece, move, node.Parent == null);
 
                         //UnityEngine.Debug.Log("possible next state - from: " + spaceWithPiece + " to " + move + " weight " + weight);
                         yield return new BoardStateNode(node, newBoard, currTurnPlayer, node.LastMoveBy, new MoveInfo { from = spaceWithPiece, to = move, numCaptured = numCaptures, precompmutedWeight = weight });

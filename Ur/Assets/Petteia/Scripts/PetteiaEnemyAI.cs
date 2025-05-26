@@ -206,8 +206,8 @@ public class PetteiaEnemyAI : MonoBehaviour
     }
 
     // game world's piece positions are all (row, col), but the board model is (x, y) or (col, row)
-    Vector2Int BoardToView(Vector2Int pos) => new Vector2Int(pos.y, pos.x);
-    Vector2Int ViewToBoard(Vector2Int pos) => new Vector2Int(pos.y, pos.x);
+    public static Vector2Int BoardToView(Vector2Int pos) => new Vector2Int(pos.y, pos.x);
+    public static Vector2Int ViewToBoard(Vector2Int pos) => new Vector2Int(pos.y, pos.x);
 
     int _enemyTurn;
 
