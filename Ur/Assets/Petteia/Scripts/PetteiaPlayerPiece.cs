@@ -49,6 +49,13 @@ public class PetteiaPlayerPiece : MonoBehaviour, IPiece
 
     Vector3 _goalPos;
 
+    public void InstantSnapToPosition(Vector3 pos)
+    {
+        potentialPos = new Vector2Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y));
+        _goalPos = pos;
+        transform.position = _goalPos;
+    }
+
     void FixedUpdate()
     {
         //Active turns on when the piece is clicked and off on mouse up

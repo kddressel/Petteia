@@ -268,6 +268,11 @@ public class PetteiaGameController : MonoBehaviour
 
             _hintButton.gameObject.SetActive(true);
             _hintButton.onClick.AddListener(OnHintClick);
+
+            if (_isAutoPlaying)
+            {
+                StartCoroutine(GenerateMoveHint(applyMove: true));
+            }
         }
     }
 
@@ -734,8 +739,8 @@ public class PetteiaGameController : MonoBehaviour
             var piece = playerPieces.FirstOrDefault(piece => piece.pieceStartPos == fromView);
             if (piece != null)
             {
-                var boardPos = BoardSquares[fromView.x, fromView.y];
-                piece.transform.position = boardPos.transform.position;
+                var boardPos = BoardSquares[toView.x, toView.y];
+                piece.InstantSnapToPosition(boardPos.transform.position);
                 MovePiece(fromView, toView, playerTag);
                 piece.pieceStartPos = toView;
                 SwitchTurn();
@@ -746,9 +751,16 @@ public class PetteiaGameController : MonoBehaviour
         _moveCompleted = false;
     }
 
+    bool _isAutoPlaying;
+
     async void Update()
     {
-        if (Input.GetKeyDown(KeyCode.J))
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            _isAutoPlaying = !_isAutoPlaying;
+        }
+
+        if (playerTurn && !_aiMoveRequested && Input.GetKeyDown(KeyCode.J))
         {
             StartCoroutine(GenerateMoveHint(applyMove: true));
         }
@@ -759,7 +771,7 @@ public class PetteiaGameController : MonoBehaviour
             _aiMoveRequested = false;
 
             var startTime = Time.realtimeSinceStartup;
-            var solver = new MinimaxGameSolver(2);
+            var solver = new MinimaxGameSolver(4);
 
             await new WaitForBackgroundThread();
             var solution = await solver.Solve(graph, graph.Start);
